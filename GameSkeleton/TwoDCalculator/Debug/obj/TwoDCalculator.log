@@ -1,0 +1,33 @@
+﻿Build started 9/30/2014 7:06:38 PM.
+     1>Project "C:\_\src\Neumont\gat160blake_rollins\GameSkeleton\TwoDCalculator\TwoDCalculator.vcxproj" on node 2 (Rebuild target(s)).
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /IC:\_\src\Neumont\gat160blake_rollins\GameSkeleton\TwoDCalculator\..\GameSolution\Engine /I"C:\_\src\Neumont\gat160blake_rollins\GameSkeleton\TwoDCalculator\..\glm-0.9.5.4" /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\obj\\" /Fd"Debug\obj\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt EntryPoint.cpp
+         EntryPoint.cpp
+         GLM: rotate function taking degrees as a parameter is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\_\src\Neumont\gat160blake_rollins\GameSkeleton\TwoDCalculator\Debug\TwoDCalculator.exe" /INCREMENTAL /NOLOGO /LIBPATH:C:\_\src\Neumont\gat160blake_rollins\GameSkeleton\TwoDCalculator\lib /LIBPATH:C:\_\src\Neumont\gat160blake_rollins\GameSkeleton\TwoDCalculator\Debug Engine.lib TwoDHarness.lib QtCored4.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\_\src\Neumont\gat160blake_rollins\GameSkeleton\TwoDCalculator\Debug\TwoDCalculator.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\_\src\Neumont\gat160blake_rollins\GameSkeleton\TwoDCalculator\Debug\TwoDCalculator.lib" /MACHINE:X86 Debug\obj\EntryPoint.obj
+            Creating library C:\_\src\Neumont\gat160blake_rollins\GameSkeleton\TwoDCalculator\Debug\TwoDCalculator.lib and object C:\_\src\Neumont\gat160blake_rollins\GameSkeleton\TwoDCalculator\Debug\TwoDCalculator.exp
+         TwoDCalculator.vcxproj -> C:\_\src\Neumont\gat160blake_rollins\GameSkeleton\TwoDCalculator\Debug\TwoDCalculator.exe
+       PostBuildEvent:
+         xcopy /y /d  "C:\_\src\Neumont\gat160blake_rollins\GameSkeleton\TwoDCalculator\bin\*.dll" "C:\_\src\Neumont\gat160blake_rollins\GameSkeleton\TwoDCalculator\Debug\"
+         xcopy /y /d  "C:\_\src\Neumont\gat160blake_rollins\GameSkeleton\TwoDCalculator\lib\*.lib" "C:\_\src\Neumont\gat160blake_rollins\GameSkeleton\TwoDCalculator\Debug\"
+         :VCEnd
+         C:\_\src\Neumont\gat160blake_rollins\GameSkeleton\TwoDCalculator\bin\glew32.dll
+         C:\_\src\Neumont\gat160blake_rollins\GameSkeleton\TwoDCalculator\bin\glew32d.dll
+         C:\_\src\Neumont\gat160blake_rollins\GameSkeleton\TwoDCalculator\bin\NeumontTools.dll
+         C:\_\src\Neumont\gat160blake_rollins\GameSkeleton\TwoDCalculator\bin\QtCored4.dll
+         C:\_\src\Neumont\gat160blake_rollins\GameSkeleton\TwoDCalculator\bin\QtGuid4.dll
+         C:\_\src\Neumont\gat160blake_rollins\GameSkeleton\TwoDCalculator\bin\QtOpenGLd4.dll
+         C:\_\src\Neumont\gat160blake_rollins\GameSkeleton\TwoDCalculator\bin\TwoDHarness.dll
+         7 File(s) copied
+         C:\_\src\Neumont\gat160blake_rollins\GameSkeleton\TwoDCalculator\lib\NeumontTools.lib
+         C:\_\src\Neumont\gat160blake_rollins\GameSkeleton\TwoDCalculator\lib\QtCored4.lib
+         C:\_\src\Neumont\gat160blake_rollins\GameSkeleton\TwoDCalculator\lib\QtGuid4.lib
+         C:\_\src\Neumont\gat160blake_rollins\GameSkeleton\TwoDCalculator\lib\QtOpenGLd4.lib
+         C:\_\src\Neumont\gat160blake_rollins\GameSkeleton\TwoDCalculator\lib\TwoDHarness.lib
+         5 File(s) copied
+     1>Done Building Project "C:\_\src\Neumont\gat160blake_rollins\GameSkeleton\TwoDCalculator\TwoDCalculator.vcxproj" (Rebuild target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:01.20
