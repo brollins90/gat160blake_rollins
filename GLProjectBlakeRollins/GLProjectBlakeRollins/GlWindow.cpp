@@ -77,7 +77,7 @@ void GlWindow::compileShaders()
 
 	glLinkProgram(programID);
 
-	//glUseProgram(programID);
+	glUseProgram(programID);
 }
 
 void GlWindow::paintGL()
