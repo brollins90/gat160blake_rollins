@@ -1,4 +1,3 @@
-#include <GL\glew.h>
 #include "GlWindow.h"
 
 char* vertexShaderCode =
@@ -28,56 +27,100 @@ char* fragmentShaderCode =
 "}"
 "";
 
-void GlWindow::initializeGL()
+void GlWindow::createProgram()
 {
-	glewInit();
-	sendDataToHardware();
-	compileShaders();
-}
-
-void GlWindow::sendDataToHardware()
-{
-	GLfloat vertices[] =
-	{
-		+0.0f, +0.8f, +1.0f, +0.0f, +0.0f,
-		-0.8f, -0.8f, +0.0f, +1.0f, +0.0f,
-		+0.8f, -0.8f, +0.0f, +0.0f, +1.0f,
-	};
-
-	GLuint bufferID;
-	glGenBuffers(1, &bufferID);
-	glBindBuffer(GL_ARRAY_BUFFER, bufferID);
-
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GL_FLOAT), 0);
-
-	glEnableVertexAttribArray(3);
-	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GL_FLOAT), (void*)(2 * sizeof(GL_FLOAT)));
+	programID = glCreateProgram();
 }
 
 void GlWindow::compileShaders()
 {
+	// Create some shaders
 	GLuint vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
 	GLuint fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
 
-	char* glslCode[1];
+	// Copy the shaderCode into an array because the glShaderSource functions require a char**
+	const char* glslCode[1];
 	glslCode[0] = vertexShaderCode;
-	glShaderSource(vertexShaderID, 1, (const GLchar **)&glslCode, 0);
+	glShaderSource(vertexShaderID, 1, glslCode, 0);
 	glslCode[0] = fragmentShaderCode;
-	glShaderSource(fragmentShaderID, 1, (const GLchar **)&glslCode, 0);
+	glShaderSource(fragmentShaderID, 1, glslCode, 0);
 
+	// Compile
 	glCompileShader(vertexShaderID);
 	glCompileShader(fragmentShaderID);
 
-	GLuint programID = glCreateProgram();
+	// Check for errors in compilation
+	GLint compilationStatus;
+	glGetShaderiv(vertexShaderID, GL_COMPILE_STATUS, &compilationStatus);
+	if (compilationStatus != 0) {
+		GLint logLength;
+		glGetShaderiv(vertexShaderID, GL_INFO_LOG_LENGTH, &logLength);
+		char* buffer = new char[logLength];
+		GLsizei bitBucket;
+		glGetShaderInfoLog(vertexShaderID, logLength, &bitBucket, buffer);
+	}
+
+	glGetShaderiv(fragmentShaderID, GL_COMPILE_STATUS, &compilationStatus);
+	if (compilationStatus != 0) {
+		GLint logLength;
+		glGetShaderiv(fragmentShaderID, GL_INFO_LOG_LENGTH, &logLength);
+		char* buffer = new char[logLength];
+		GLsizei bitBucket;
+		glGetShaderInfoLog(fragmentShaderID, logLength, &bitBucket, buffer);
+	}
+
+	// attach the shaders
 	glAttachShader(programID, vertexShaderID);
 	glAttachShader(programID, fragmentShaderID);
 
+	// Link
 	glLinkProgram(programID);
 
+	// Tell the hardware to use our stuff and not the default shaders
 	glUseProgram(programID);
+}
+
+void GlWindow::sendDataToHardware()
+{
+	// Define the data
+	GLfloat vertices[] =
+	{
+		+0.0f, +0.8f, +1.0f, +1.0f, +1.0f,
+		-0.8f, -0.8f, +0.0f, +1.0f, +0.0f,
+		+0.8f, -0.8f, +0.0f, +0.0f, +1.0f,
+	};
+
+	// Create a buffer in graphics ram
+	glGenBuffers(1, &bufferID);
+	glBindBuffer(GL_ARRAY_BUFFER, bufferID);
+
+	// Copy the vertices to the graphics ram
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+	connect(&windowTimer, SIGNAL(timeout()), this, SLOT(windowUpdate()));
+	windowTimer.start(0);
+
+	// define the data attributes so we can reference the data later
+	GLuint vPositionLocation = 0;
+	glEnableVertexAttribArray(vPositionLocation);
+	glVertexAttribPointer(vPositionLocation, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GL_FLOAT), 0);
+
+	GLuint vColorLocation = 3;
+	glEnableVertexAttribArray(vColorLocation);
+	glVertexAttribPointer(vColorLocation, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GL_FLOAT), (void*)(2 * sizeof(GL_FLOAT)));
+}
+
+void GlWindow::windowUpdate()
+{
+
+}
+
+void GlWindow::initializeGL()
+{
+	glewInit();
+	createProgram();
+	sendDataToHardware();
+	compileShaders();
 }
 
 void GlWindow::paintGL()
