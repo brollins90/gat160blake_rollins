@@ -1,29 +1,31 @@
 #include "GlWindow.h"
 
+using glm::vec3;
+
 char* vertexShaderCode =
 "#version 400\r\n"
 ""
 "in layout(location=0) vec2 v_position;"
 "in layout(location=1) vec3 v_color;"
 ""
-"out vec3 f_color;"
+"out vec3 frag_color;"
 ""
 "void main()"
 "{"
-"	gl_Position = v_position;"
-"	f_color = v_color;"
+"    gl_Position = vec4(v_position, 0.0f, 1.0f);"
+"    frag_color = v_color;"
 "}"
 "";
 
 char* fragmentShaderCode =
 "#version 400\r\n"
 ""
-"int vec3 f_color;"
-"out vec3 final_color;"
+"in vec3 frag_color;"
+"out vec4 out_color;"
 ""
 "void main()"
 "{"
-"	final_color = f_color;"
+"    out_color = vec4(frag_color, 1.0f);"
 "}"
 "";
 
@@ -49,6 +51,7 @@ void GlWindow::compileShaders()
 	glCompileShader(vertexShaderID);
 	glCompileShader(fragmentShaderID);
 
+	/*
 	// Check for errors in compilation
 	GLint compilationStatus;
 	glGetShaderiv(vertexShaderID, GL_COMPILE_STATUS, &compilationStatus);
@@ -68,6 +71,7 @@ void GlWindow::compileShaders()
 		GLsizei bitBucket;
 		glGetShaderInfoLog(fragmentShaderID, logLength, &bitBucket, buffer);
 	}
+	*/
 
 	// attach the shaders
 	glAttachShader(programID, vertexShaderID);
@@ -85,9 +89,9 @@ void GlWindow::sendDataToHardware()
 	// Define the data
 	GLfloat vertices[] =
 	{
-		+0.0f, +0.8f, +1.0f, +1.0f, +1.0f,
-		-0.8f, -0.8f, +0.0f, +1.0f, +0.0f,
-		+0.8f, -0.8f, +0.0f, +0.0f, +1.0f,
+		+0.0f, +0.8f,	+1.0f, +1.0f, +1.0f,
+		-0.8f, -0.8f,	+0.0f, +1.0f, +0.0f,
+		+0.8f, -0.8f,	+0.0f, +0.0f, +1.0f,
 	};
 
 	// Create a buffer in graphics ram
@@ -105,7 +109,7 @@ void GlWindow::sendDataToHardware()
 	glEnableVertexAttribArray(vPositionLocation);
 	glVertexAttribPointer(vPositionLocation, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GL_FLOAT), 0);
 
-	GLuint vColorLocation = 3;
+	GLuint vColorLocation = 1;
 	glEnableVertexAttribArray(vColorLocation);
 	glVertexAttribPointer(vColorLocation, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GL_FLOAT), (void*)(2 * sizeof(GL_FLOAT)));
 }

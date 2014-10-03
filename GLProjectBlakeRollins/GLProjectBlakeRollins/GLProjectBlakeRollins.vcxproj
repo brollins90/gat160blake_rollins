@@ -87,6 +87,7 @@ xcopy /y /d "$(MiddlewareDir)other\bin\*.dll" "$(OutDir)"
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="GlWindow.cpp" />
+    <ClCompile Include="GlWindow._moc.cpp" />
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <ItemGroup>
