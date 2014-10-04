@@ -16,6 +16,7 @@ private:
 	GLuint programID;
 	QTimer windowTimer;
 
+	void checkKeyState();
 	bool checkShaderStatus(GLuint shaderID);
 	void createProgram();
 	void compileShaders();
@@ -24,7 +25,6 @@ private slots:
 	void windowUpdate();
 protected:
 	void initializeGL();
-	void keyPressEvent(QKeyEvent*);
 	void paintGL();
 public:
 };

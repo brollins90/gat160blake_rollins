@@ -10,17 +10,12 @@ char* vertexShaderCode =
 "in layout(location=1) vec3 v_color;"
 ""
 "uniform vec3 triPosition;"
-//"uniform vec3 dominating_color;"
-//"uniform float yFlip;"
 ""
 "out vec3 frag_color;"
 ""
 "void main()"
 "{"
 "    gl_Position = vec4(v_position.x + triPosition.x, v_position.y + triPosition.y, 0.0f, 1.0f);"
-//"    gl_Position.x += triPosition.x;"
-//"    gl_Position.y += triPosition.y;"
-//"    gl_Position.z += triPosition.z;"
 "    frag_color = v_color;"
 "}"
 "";
@@ -103,18 +98,18 @@ void GlWindow::initializeGL()
 	compileShaders();
 }
 
-void GlWindow::keyPressEvent(QKeyEvent* e)
+void GlWindow::checkKeyState()
 {
-	if (e->key() == Qt::Key_Up) {
+	if (GetAsyncKeyState(VK_UP)) {
 		triPosition.y += SPEED;
 	}
-	if (e->key() == Qt::Key_Down) {
+	if (GetAsyncKeyState(VK_DOWN)) {
 		triPosition.y -= SPEED;
 	}
-	if (e->key() == Qt::Key_Left) {
+	if (GetAsyncKeyState(VK_LEFT)) {
 		triPosition.x -= SPEED;
 	}
-	if (e->key() == Qt::Key_Right) {
+	if (GetAsyncKeyState(VK_RIGHT)) {
 		triPosition.x += SPEED;
 	}
 }
@@ -124,22 +119,9 @@ void GlWindow::paintGL()
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 	glViewport(0, 0, width(), height());
 
-	//GLint dominatingColorUniformLocation = glGetUniformLocation(programID, "dominating_color");
-	//GLint yFlipUniformLocation = glGetUniformLocation(programID, "yFlip");
 	GLint triPositionUniformLocation = glGetUniformLocation(programID, "triPosition");
-	//vec3 dominatingColor(1.0f, 0.0f, 0.0f);
-
-	//glUniform3fv(dominatingColorUniformLocation, 1, &dominatingColor[0]);
-	//glUniform1f(yFlipUniformLocation, 1.0f);
-	
 	glUniform3fv(triPositionUniformLocation, 1, &triPosition[0]);
 	glDrawArrays(GL_TRIANGLES, 0, 6);
-
-	//dominatingColor.r = 0;
-	//dominatingColor.b = 1;
-	//glUniform3fv(dominatingColorUniformLocation, 1, &dominatingColor[0]);
-	//glUniform1f(yFlipUniformLocation, -1.0f);
-	//glDrawArrays(GL_TRIANGLES, 0, 3);
 }
 
 void GlWindow::sendDataToHardware()
@@ -147,10 +129,6 @@ void GlWindow::sendDataToHardware()
 	// Define the data
 	GLfloat vertices[] =
 	{
-		//+0.00f, +0.25f,		+0.8f, +1.0f, +0.1f,
-		//-0.25f, -0.25f,		+0.0f, +1.0f, +1.0f,
-		//+0.25f, -0.25f,		+1.0f, +0.2f, +0.0f,
-
 		+0.00f, +0.50f, +0.00f, +0.8f, +1.0f, +0.1f,
 		-0.15f, -0.10f, +0.00f, +1.0f, +0.0f, +0.7f,
 		+0.00f, +0.00f, +0.00f, +0.9f, +0.2F, +0.3f,
@@ -184,11 +162,6 @@ void GlWindow::sendDataToHardware()
 // Timer callback
 void GlWindow::windowUpdate()
 {
-	////qDebug() << "Update: " << triPosition.x;
-	//vec2 velocity(0.005f, 0.005f);
-	//triPosition.x += velocity.x;
-	//triPosition.y += velocity.y;
-
+	checkKeyState();
 	repaint();
 }
-
