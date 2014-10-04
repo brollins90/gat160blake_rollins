@@ -4,6 +4,7 @@
 #include <Qt\qtimer.h>
 #include <glm\glm.hpp>
 #include <Qt\qdebug.h>
+#include <QtGui\QKeyEvent>
 
 class GlWindow : public QGLWidget
 {
@@ -23,6 +24,7 @@ private slots:
 	void windowUpdate();
 protected:
 	void initializeGL();
+	void keyPressEvent(QKeyEvent*);
 	void paintGL();
 public:
 };

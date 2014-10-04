@@ -38,6 +38,7 @@ char* fragmentShaderCode =
 "";
 
 vec3 triPosition;
+float velocity = 0.005f;
 
 bool GlWindow::checkShaderStatus(GLuint shaderID) 
 {
@@ -102,6 +103,22 @@ void GlWindow::initializeGL()
 	compileShaders();
 }
 
+void GlWindow::keyPressEvent(QKeyEvent* e)
+{
+	if (e->key() == Qt::Key_Up) {
+		triPosition.y += velocity;
+	}
+	if (e->key() == Qt::Key_Down) {
+		triPosition.y -= velocity;
+	}
+	if (e->key() == Qt::Key_Left) {
+		triPosition.x -= velocity;
+	}
+	if (e->key() == Qt::Key_Right) {
+		triPosition.x += velocity;
+	}
+}
+
 void GlWindow::paintGL()
 {
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
@@ -159,10 +176,10 @@ void GlWindow::sendDataToHardware()
 // Timer callback
 void GlWindow::windowUpdate()
 {
-	qDebug() << "Update: " << triPosition.x;
-	vec2 velocity(0.005f, 0.005f);
-	triPosition.x += velocity.x;
-	triPosition.y += velocity.y;
+	////qDebug() << "Update: " << triPosition.x;
+	//vec2 velocity(0.005f, 0.005f);
+	//triPosition.x += velocity.x;
+	//triPosition.y += velocity.y;
 
 	repaint();
 }
