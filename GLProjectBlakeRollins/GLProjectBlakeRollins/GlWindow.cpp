@@ -38,7 +38,7 @@ char* fragmentShaderCode =
 "";
 
 vec3 triPosition;
-float velocity = 0.005f;
+const float SPEED = 0.005f;
 
 bool GlWindow::checkShaderStatus(GLuint shaderID) 
 {
@@ -106,16 +106,16 @@ void GlWindow::initializeGL()
 void GlWindow::keyPressEvent(QKeyEvent* e)
 {
 	if (e->key() == Qt::Key_Up) {
-		triPosition.y += velocity;
+		triPosition.y += SPEED;
 	}
 	if (e->key() == Qt::Key_Down) {
-		triPosition.y -= velocity;
+		triPosition.y -= SPEED;
 	}
 	if (e->key() == Qt::Key_Left) {
-		triPosition.x -= velocity;
+		triPosition.x -= SPEED;
 	}
 	if (e->key() == Qt::Key_Right) {
-		triPosition.x += velocity;
+		triPosition.x += SPEED;
 	}
 }
 
@@ -133,7 +133,7 @@ void GlWindow::paintGL()
 	//glUniform1f(yFlipUniformLocation, 1.0f);
 	
 	glUniform3fv(triPositionUniformLocation, 1, &triPosition[0]);
-	glDrawArrays(GL_TRIANGLES, 0, 3);
+	glDrawArrays(GL_TRIANGLES, 0, 6);
 
 	//dominatingColor.r = 0;
 	//dominatingColor.b = 1;
@@ -147,9 +147,17 @@ void GlWindow::sendDataToHardware()
 	// Define the data
 	GLfloat vertices[] =
 	{
-		+0.00f, +0.25f,		+0.8f, +1.0f, +0.1f,
-		-0.25f, -0.25f,		+0.0f, +1.0f, +1.0f,
-		+0.25f, -0.25f,		+1.0f, +0.2f, +0.0f,
+		//+0.00f, +0.25f,		+0.8f, +1.0f, +0.1f,
+		//-0.25f, -0.25f,		+0.0f, +1.0f, +1.0f,
+		//+0.25f, -0.25f,		+1.0f, +0.2f, +0.0f,
+
+		+0.00f, +0.50f, +0.00f, +0.8f, +1.0f, +0.1f,
+		-0.15f, -0.10f, +0.00f, +1.0f, +0.0f, +0.7f,
+		+0.00f, +0.00f, +0.00f, +0.9f, +0.2F, +0.3f,
+
+		+0.00f, +0.50f, +0.00f, +0.8f, +1.0f, +0.1f,
+		+0.15f, -0.10f, +0.00f, +1.0f, +0.0f, +0.7f,
+		+0.00f, +0.00f, +0.00f, +0.9f, +0.2F, +0.3f,
 	};
 
 	// Create a buffer in graphics ram
@@ -166,11 +174,11 @@ void GlWindow::sendDataToHardware()
 	// define the data attributes so we can reference the data later
 	GLuint vPositionLocation = 0;
 	glEnableVertexAttribArray(vPositionLocation);
-	glVertexAttribPointer(vPositionLocation, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GL_FLOAT), 0);
+	glVertexAttribPointer(vPositionLocation, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GL_FLOAT), 0);
 
 	GLuint vColorLocation = 1;
 	glEnableVertexAttribArray(vColorLocation);
-	glVertexAttribPointer(vColorLocation, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GL_FLOAT), (void*)(2 * sizeof(GL_FLOAT)));
+	glVertexAttribPointer(vColorLocation, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GL_FLOAT), (void*)(3 * sizeof(GL_FLOAT)));
 }
 
 // Timer callback
