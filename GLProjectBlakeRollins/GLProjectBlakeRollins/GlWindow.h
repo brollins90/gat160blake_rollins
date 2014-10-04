@@ -3,6 +3,7 @@
 #include <QtOpenGl\qglwidget>
 #include <Qt\qtimer.h>
 #include <glm\glm.hpp>
+#include <Qt\qdebug.h>
 
 class GlWindow : public QGLWidget
 {
