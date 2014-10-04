@@ -14,6 +14,7 @@ private:
 	GLuint programID;
 	QTimer windowTimer;
 
+	bool checkShaderStatus(GLuint shaderID);
 	void createProgram();
 	void compileShaders();
 	void sendDataToHardware();

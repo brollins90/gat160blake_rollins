@@ -8,12 +8,14 @@ char* vertexShaderCode =
 "in layout(location=0) vec2 v_position;"
 "in layout(location=1) vec3 v_color;"
 ""
+"uniform vec3 dominating_color;"
+""
 "out vec3 frag_color;"
 ""
 "void main()"
 "{"
 "    gl_Position = vec4(v_position, 0.0f, 1.0f);"
-"    frag_color = v_color;"
+"    frag_color = dominating_color;"
 "}"
 "";
 
@@ -28,6 +30,21 @@ char* fragmentShaderCode =
 "    out_color = vec4(frag_color, 1.0f);"
 "}"
 "";
+
+bool GlWindow::checkShaderStatus(GLuint shaderID) 
+{
+	GLint compilationStatus;
+	glGetShaderiv(shaderID, GL_COMPILE_STATUS, &compilationStatus);
+	if (compilationStatus != 0) {
+		GLint logLength;
+		glGetShaderiv(shaderID, GL_INFO_LOG_LENGTH, &logLength);
+		char* buffer = new char[logLength];
+		GLsizei bitBucket;
+		glGetShaderInfoLog(shaderID, logLength, &bitBucket, buffer);
+		return false;
+	}
+	return true;
+}
 
 void GlWindow::createProgram()
 {
@@ -51,27 +68,9 @@ void GlWindow::compileShaders()
 	glCompileShader(vertexShaderID);
 	glCompileShader(fragmentShaderID);
 
-	/*
 	// Check for errors in compilation
-	GLint compilationStatus;
-	glGetShaderiv(vertexShaderID, GL_COMPILE_STATUS, &compilationStatus);
-	if (compilationStatus != 0) {
-		GLint logLength;
-		glGetShaderiv(vertexShaderID, GL_INFO_LOG_LENGTH, &logLength);
-		char* buffer = new char[logLength];
-		GLsizei bitBucket;
-		glGetShaderInfoLog(vertexShaderID, logLength, &bitBucket, buffer);
-	}
-
-	glGetShaderiv(fragmentShaderID, GL_COMPILE_STATUS, &compilationStatus);
-	if (compilationStatus != 0) {
-		GLint logLength;
-		glGetShaderiv(fragmentShaderID, GL_INFO_LOG_LENGTH, &logLength);
-		char* buffer = new char[logLength];
-		GLsizei bitBucket;
-		glGetShaderInfoLog(fragmentShaderID, logLength, &bitBucket, buffer);
-	}
-	*/
+	checkShaderStatus(vertexShaderID);
+	checkShaderStatus(fragmentShaderID);
 
 	// attach the shaders
 	glAttachShader(programID, vertexShaderID);
@@ -82,6 +81,23 @@ void GlWindow::compileShaders()
 
 	// Tell the hardware to use our stuff and not the default shaders
 	glUseProgram(programID);
+}
+
+void GlWindow::initializeGL()
+{
+	glewInit();
+	createProgram();
+	sendDataToHardware();
+	compileShaders();
+}
+
+void GlWindow::paintGL()
+{
+	vec3 dominatingColor(1.0f, 0.0f, 0.0f);
+	GLint dominatingColorUniformLocation = glGetUniformLocation(programID, "dominating_color");
+	glUniform3fv(dominatingColorUniformLocation, 1, &dominatingColor[0]);
+
+	glDrawArrays(GL_TRIANGLES, 0, 3);
 }
 
 void GlWindow::sendDataToHardware()
@@ -101,6 +117,7 @@ void GlWindow::sendDataToHardware()
 	// Copy the vertices to the graphics ram
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
+	// Register the timer callback
 	connect(&windowTimer, SIGNAL(timeout()), this, SLOT(windowUpdate()));
 	windowTimer.start(0);
 
@@ -114,20 +131,9 @@ void GlWindow::sendDataToHardware()
 	glVertexAttribPointer(vColorLocation, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GL_FLOAT), (void*)(2 * sizeof(GL_FLOAT)));
 }
 
+// Timer callback
 void GlWindow::windowUpdate()
 {
 
 }
 
-void GlWindow::initializeGL()
-{
-	glewInit();
-	createProgram();
-	sendDataToHardware();
-	compileShaders();
-}
-
-void GlWindow::paintGL()
-{
-	glDrawArrays(GL_TRIANGLES, 0, 3);
-}
