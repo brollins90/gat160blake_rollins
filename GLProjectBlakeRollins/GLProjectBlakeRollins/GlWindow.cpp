@@ -1,21 +1,24 @@
 #include "GlWindow.h"
+#include <glm\gtx\transform.hpp>
 
 using glm::vec2;
 using glm::vec3;
+using glm::mat4;
 
 char* vertexShaderCode =
-"#version 400\r\n"
+"#version 430\r\n"
 ""
-"in layout(location=0) vec2 v_position;"
+"in layout(location=0) vec3 v_position;"
 "in layout(location=1) vec3 v_color;"
 ""
-"uniform vec3 triPosition;"
+"uniform mat4 fullTransformMatrix;"
 ""
 "out vec3 frag_color;"
 ""
 "void main()"
 "{"
-"    gl_Position = vec4(v_position.x + triPosition.x, v_position.y + triPosition.y, 0.0f, 1.0f);"
+"    vec4 v = vec4(v_position, 1.0f);"
+"    gl_Position = fullTransformMatrix * v;"
 "    frag_color = v_color;"
 "}"
 "";
@@ -33,6 +36,7 @@ char* fragmentShaderCode =
 "";
 
 vec3 triPosition;
+float triAngle;
 const float SPEED = 0.005f;
 
 bool GlWindow::checkShaderStatus(GLuint shaderID) 
@@ -93,6 +97,7 @@ void GlWindow::initializeGL()
 	createProgram();
 
 	triPosition = vec3(0.0f, 0.0f, 0.0f);
+	triAngle = 0.0f;
 
 	sendDataToHardware();
 	compileShaders();
@@ -110,7 +115,8 @@ void GlWindow::checkKeyState()
 		triPosition.x -= SPEED;
 	}
 	if (GetAsyncKeyState(VK_RIGHT)) {
-		triPosition.x += SPEED;
+		//triPosition.x += SPEED;
+		triAngle += .5;
 	}
 }
 
@@ -119,8 +125,16 @@ void GlWindow::paintGL()
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 	glViewport(0, 0, width(), height());
 
-	GLint triPositionUniformLocation = glGetUniformLocation(programID, "triPosition");
-	glUniform3fv(triPositionUniformLocation, 1, &triPosition[0]);
+	mat4 translationMatrix = glm::translate(mat4(), vec3(triPosition.x, triPosition.y, -3.0f));
+	mat4 rotationMatrix = glm::rotate(mat4(), triAngle, glm::vec3(1.0f, 0.0f, 0.0f));
+	mat4 projectionMatrix = glm::perspective(60.0f, ((float)width()) / height(), 0.1f, 10.0f);
+
+	mat4 fullTransformMatrix = projectionMatrix * translationMatrix * rotationMatrix;
+
+	GLint fullTransformMatrixUniformLocation = glGetUniformLocation(programID, "fullTransformMatrix");
+
+	glUniformMatrix4fv(fullTransformMatrixUniformLocation, 1, GL_FALSE, &fullTransformMatrix[0][0]);
+
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
@@ -162,6 +176,7 @@ void GlWindow::sendDataToHardware()
 // Timer callback
 void GlWindow::windowUpdate()
 {
+	qDebug() << triPosition.x;
 	checkKeyState();
 	repaint();
 }
