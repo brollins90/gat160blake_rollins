@@ -36,8 +36,12 @@ char* fragmentShaderCode =
 "";
 
 vec3 triPosition;
+vec3 triVelocity;
+vec3 triDirection;
 float triAngle;
 const float SPEED = 0.005f;
+const float SCALE = 0.1f;
+GLint fullTransformMatrixUniformLocation;
 
 bool GlWindow::checkShaderStatus(GLuint shaderID) 
 {
@@ -65,7 +69,7 @@ void GlWindow::compileShaders()
 	GLuint vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
 	GLuint fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
 
-	// Copy the shaderCode into an array because the glShaderSource functions require a char**
+	// Copy the shader code into an array because the glShaderSource functions require a char**
 	const char* glslCode[1];
 	glslCode[0] = vertexShaderCode;
 	glShaderSource(vertexShaderID, 1, glslCode, 0);
@@ -89,6 +93,8 @@ void GlWindow::compileShaders()
 
 	// Tell the hardware to use our stuff and not the default shaders
 	glUseProgram(programID);
+
+	fullTransformMatrixUniformLocation = glGetUniformLocation(programID, "fullTransformMatrix");
 }
 
 void GlWindow::initializeGL()
@@ -97,7 +103,8 @@ void GlWindow::initializeGL()
 	createProgram();
 
 	triPosition = vec3(0.0f, 0.0f, 0.0f);
-	triAngle = 0.0f;
+	triAngle = (3.141f / 4.0f);
+	triVelocity = vec3(0.0f, 0.0f, 0.0f);
 
 	sendDataToHardware();
 	compileShaders();
@@ -106,17 +113,16 @@ void GlWindow::initializeGL()
 void GlWindow::checkKeyState()
 {
 	if (GetAsyncKeyState(VK_UP)) {
-		triPosition.y += SPEED;
+		triVelocity += (/*dt **/ SPEED * triDirection);
 	}
 	if (GetAsyncKeyState(VK_DOWN)) {
-		triPosition.y -= SPEED;
+		triVelocity -= (/*dt **/ SPEED * triDirection);
 	}
 	if (GetAsyncKeyState(VK_LEFT)) {
-		triPosition.x -= SPEED;
+		triAngle += .75;
 	}
 	if (GetAsyncKeyState(VK_RIGHT)) {
-		//triPosition.x += SPEED;
-		triAngle += .5;
+		triAngle -= .75;
 	}
 }
 
@@ -125,13 +131,25 @@ void GlWindow::paintGL()
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 	glViewport(0, 0, width(), height());
 
-	mat4 translationMatrix = glm::translate(mat4(), vec3(triPosition.x, triPosition.y, -3.0f));
-	mat4 rotationMatrix = glm::rotate(mat4(), triAngle, glm::vec3(1.0f, 0.0f, 0.0f));
-	mat4 projectionMatrix = glm::perspective(60.0f, ((float)width()) / height(), 0.1f, 10.0f);
+	triVelocity *= 0.9;
 
-	mat4 fullTransformMatrix = projectionMatrix * translationMatrix * rotationMatrix;
+	triPosition += triVelocity;
 
-	GLint fullTransformMatrixUniformLocation = glGetUniformLocation(programID, "fullTransformMatrix");
+	/*mat4 translationMatrix = mat4();
+	translationMatrix[3].x = triPosition.x;
+	translationMatrix[3].y = triPosition.y;
+*/
+	mat4 translationMatrix = glm::translate(mat4(), triPosition);
+	mat4 rotationMatrix = glm::rotate(mat4(), triAngle, glm::vec3(0.0f, 0.0f, 1.0f));
+	mat4 scaleMatrix = glm::scale(mat4(), vec3(SCALE));
+	//mat4 projectionMatrix = glm::perspective(60.0f, ((float)width()) / height(), 0.1f, 10.0f);
+
+	mat4 fullTransformMatrix = scaleMatrix * translationMatrix * rotationMatrix;
+
+	// Direction is normalized about the Y axis
+	triDirection = glm::normalize(vec3(rotationMatrix * glm::vec4(0.0f, 1.0f, 0.0f, 0.0f)));
+
+	
 
 	glUniformMatrix4fv(fullTransformMatrixUniformLocation, 1, GL_FALSE, &fullTransformMatrix[0][0]);
 
@@ -143,13 +161,17 @@ void GlWindow::sendDataToHardware()
 	// Define the data
 	GLfloat vertices[] =
 	{
-		+0.00f, +0.50f, +0.00f, +0.8f, +1.0f, +0.1f,
-		-0.15f, -0.10f, +0.00f, +1.0f, +0.0f, +0.7f,
-		+0.00f, +0.00f, +0.00f, +0.9f, +0.2F, +0.3f,
+		+0.00f, +0.30f, +0.00f, +0.8f, +1.0f, +0.1f,
+		-0.15f, -0.30f, +0.00f, +1.0f, +0.0f, +0.7f,
+		+0.00f, -0.20f, +0.00f, +0.9f, +0.2F, +0.3f,
 
-		+0.00f, +0.50f, +0.00f, +0.8f, +1.0f, +0.1f,
-		+0.15f, -0.10f, +0.00f, +1.0f, +0.0f, +0.7f,
-		+0.00f, +0.00f, +0.00f, +0.9f, +0.2F, +0.3f,
+		+0.00f, +0.30f, +0.00f, +0.8f, +1.0f, +0.1f,
+		+0.15f, -0.30f, +0.00f, +1.0f, +0.0f, +0.7f,
+		+0.00f, -0.20f, +0.00f, +0.9f, +0.2F, +0.3f,
+/*
+		+0.00f, +0.30f, +0.00f, +1.0f, +0.0f, +0.0f,
+		-0.30f, -0.30f, +0.00f, +0.0f, +1.0f, +0.0f,
+		+0.30f, -0.30f, +0.00f, +0.0f, +0.0F, +1.0f,*/
 	};
 
 	// Create a buffer in graphics ram
