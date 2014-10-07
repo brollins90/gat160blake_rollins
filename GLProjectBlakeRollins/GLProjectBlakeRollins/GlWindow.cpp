@@ -142,7 +142,7 @@ void GlWindow::paintGL()
 	mat4 translationMatrix = glm::translate(mat4(), triPosition);
 	mat4 rotationMatrix = glm::rotate(mat4(), triAngle, glm::vec3(0.0f, 0.0f, 1.0f));
 	mat4 scaleMatrix = glm::scale(mat4(), vec3(SCALE));
-	//mat4 projectionMatrix = glm::perspective(60.0f, ((float)width()) / height(), 0.1f, 10.0f);
+	///mat4 projectionMatrix = glm::perspective(60.0f, ((float)width()) / height(), 0.1f, 10.0f);
 
 	mat4 fullTransformMatrix = scaleMatrix * translationMatrix * rotationMatrix;
 
