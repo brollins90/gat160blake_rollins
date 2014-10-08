@@ -41,7 +41,7 @@ vec3 triVelocity1, triVelocity2;
 vec3 triDirection1, triDirection2;
 float triAngle1, triAngle2;
 const float SPEED = 0.005f;
-const float SCALE = 0.4f;
+const float SCALE = 0.45f;
 GLint fullTransformMatrixUniformLocation;
 GLint uniformColorUniformLocation;
 
