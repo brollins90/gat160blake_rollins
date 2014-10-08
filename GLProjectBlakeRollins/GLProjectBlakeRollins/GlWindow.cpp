@@ -36,12 +36,12 @@ char* fragmentShaderCode =
 "}"
 "";
 
-vec3 triPosition;
-vec3 triVelocity;
-vec3 triDirection;
-float triAngle;
+vec3 triPosition1, triPosition2;
+vec3 triVelocity1, triVelocity2;
+vec3 triDirection1, triDirection2;
+float triAngle1, triAngle2;
 const float SPEED = 0.005f;
-const float SCALE = 0.1f;
+const float SCALE = 0.4f;
 GLint fullTransformMatrixUniformLocation;
 GLint uniformColorUniformLocation;
 
@@ -105,9 +105,13 @@ void GlWindow::initializeGL()
 	glewInit();
 	createProgram();
 
-	triPosition = vec3(0.0f, 0.0f, 0.0f);
-	triAngle = (3.141f / 4.0f);
-	triVelocity = vec3(0.0f, 0.0f, 0.0f);
+	triPosition1 = vec3(-0.5f, 0.0f, 0.0f);
+	triAngle1 = (3.141f / 4.0f);
+	triVelocity1 = vec3(0.0f, 0.0f, 0.0f);
+
+	triPosition2 = vec3(0.5f, 0.0f, 0.0f);
+	triAngle2 = (3.141f / 4.0f);
+	triVelocity2 = vec3(0.0f, 0.0f, 0.0f);
 
 	sendDataToHardware();
 	compileShaders();
@@ -115,17 +119,30 @@ void GlWindow::initializeGL()
 
 void GlWindow::checkKeyState()
 {
+	if (GetAsyncKeyState('W')) {
+		triVelocity1 += (/*dt **/ SPEED * triDirection1);
+	}
+	if (GetAsyncKeyState('S')) {
+		triVelocity1 -= (/*dt **/ SPEED * triDirection1);
+	}
+	if (GetAsyncKeyState('A')) {
+		triAngle1 += .75;
+	}
+	if (GetAsyncKeyState('D')) {
+		triAngle1 -= .75;
+	}
+
 	if (GetAsyncKeyState(VK_UP)) {
-		triVelocity += (/*dt **/ SPEED * triDirection);
+		triVelocity2 += (/*dt **/ SPEED * triDirection2);
 	}
 	if (GetAsyncKeyState(VK_DOWN)) {
-		triVelocity -= (/*dt **/ SPEED * triDirection);
+		triVelocity2 -= (/*dt **/ SPEED * triDirection2);
 	}
 	if (GetAsyncKeyState(VK_LEFT)) {
-		triAngle += .75;
+		triAngle2 += .75;
 	}
 	if (GetAsyncKeyState(VK_RIGHT)) {
-		triAngle -= .75;
+		triAngle2 -= .75;
 	}
 }
 
@@ -134,6 +151,40 @@ void GlWindow::paintGL()
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 	glViewport(0, 0, width(), height());
 
+
+	triVelocity1 *= 0.9;
+	triPosition1 += triVelocity1;
+
+	mat4 translationMatrix = glm::translate(mat4(), triPosition1);
+	mat4 rotationMatrix = glm::rotate(mat4(), triAngle1, glm::vec3(0.0f, 0.0f, 1.0f));
+	mat4 scaleMatrix = glm::scale(mat4(), vec3(SCALE));
+	mat4 fullTransformMatrix = scaleMatrix * translationMatrix * rotationMatrix;
+
+	// Direction is normalized about the Y axis
+	triDirection1 = glm::normalize(vec3(rotationMatrix * glm::vec4(0.0f, 1.0f, 0.0f, 0.0f)));
+	vec3 uniformColor = vec3(1.0f, 0.0f, 0.0f);
+
+	glUniformMatrix4fv(fullTransformMatrixUniformLocation, 1, GL_FALSE, &fullTransformMatrix[0][0]);
+	glUniform3fv(uniformColorUniformLocation, 1, &uniformColor[0]);
+
+
+	//glDrawArrays(GL_TRIANGLES, 0, 6);
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, 0);
+
+	triVelocity2 *= 0.9;
+	triPosition2 += triVelocity2;
+
+	translationMatrix = glm::translate(mat4(), triPosition2);
+	rotationMatrix = glm::rotate(mat4(), triAngle2, glm::vec3(0.0f, 0.0f, 1.0f));
+	scaleMatrix = glm::scale(mat4(), vec3(SCALE));
+	fullTransformMatrix = scaleMatrix * translationMatrix * rotationMatrix;
+
+	// Direction is normalized about the Y axis
+	triDirection2 = glm::normalize(vec3(rotationMatrix * glm::vec4(0.0f, 1.0f, 0.0f, 0.0f)));
+	uniformColor = vec3(0.0f, 1.0f, 0.0f);
+
+	glUniformMatrix4fv(fullTransformMatrixUniformLocation, 1, GL_FALSE, &fullTransformMatrix[0][0]);
+	glUniform3fv(uniformColorUniformLocation, 1, &uniformColor[0]);
 
 
 	//glDrawArrays(GL_TRIANGLES, 0, 6);
@@ -184,7 +235,7 @@ void GlWindow::sendDataToHardware()
 // Timer callback
 void GlWindow::windowUpdate()
 {
-	qDebug() << triPosition.x;
+//	qDebug() << triPosition.x;
 	checkKeyState();
 	applyTransforms();
 	repaint();
@@ -192,18 +243,4 @@ void GlWindow::windowUpdate()
 
 void GlWindow::applyTransforms()
 {
-	triVelocity *= 0.9;
-	triPosition += triVelocity;
-
-	mat4 translationMatrix = glm::translate(mat4(), triPosition);
-	mat4 rotationMatrix = glm::rotate(mat4(), triAngle, glm::vec3(0.0f, 0.0f, 1.0f));
-	mat4 scaleMatrix = glm::scale(mat4(), vec3(SCALE));
-	mat4 fullTransformMatrix = scaleMatrix * translationMatrix * rotationMatrix;
-
-	// Direction is normalized about the Y axis
-	triDirection = glm::normalize(vec3(rotationMatrix * glm::vec4(0.0f, 1.0f, 0.0f, 0.0f)));
-	vec3 uniformColor = vec3(1.0f, 0.0f, 0.0f);
-
-	glUniformMatrix4fv(fullTransformMatrixUniformLocation, 1, GL_FALSE, &fullTransformMatrix[0][0]);
-	glUniform3fv(uniformColorUniformLocation, 1, &uniformColor[0]);
 }
