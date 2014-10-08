@@ -12,6 +12,7 @@ char* vertexShaderCode =
 "in layout(location=1) vec3 v_color;"
 ""
 "uniform mat4 fullTransformMatrix;"
+"uniform vec3 uniformColor;"
 ""
 "out vec3 frag_color;"
 ""
@@ -19,7 +20,7 @@ char* vertexShaderCode =
 "{"
 "    vec4 v = vec4(v_position, 1.0f);"
 "    gl_Position = fullTransformMatrix * v;"
-"    frag_color = v_color;"
+"    frag_color = uniformColor;"
 "}"
 "";
 
@@ -42,6 +43,7 @@ float triAngle;
 const float SPEED = 0.005f;
 const float SCALE = 0.1f;
 GLint fullTransformMatrixUniformLocation;
+GLint uniformColorUniformLocation;
 
 bool GlWindow::checkShaderStatus(GLuint shaderID) 
 {
@@ -95,6 +97,7 @@ void GlWindow::compileShaders()
 	glUseProgram(programID);
 
 	fullTransformMatrixUniformLocation = glGetUniformLocation(programID, "fullTransformMatrix");
+	uniformColorUniformLocation = glGetUniformLocation(programID, "uniformColor");
 }
 
 void GlWindow::initializeGL()
@@ -192,21 +195,15 @@ void GlWindow::applyTransforms()
 	triVelocity *= 0.9;
 	triPosition += triVelocity;
 
-	//mat4 translationMatrix = mat4();
-	//translationMatrix[3].x = triPosition.x;
-	//translationMatrix[3].y = triPosition.y;
-
 	mat4 translationMatrix = glm::translate(mat4(), triPosition);
 	mat4 rotationMatrix = glm::rotate(mat4(), triAngle, glm::vec3(0.0f, 0.0f, 1.0f));
 	mat4 scaleMatrix = glm::scale(mat4(), vec3(SCALE));
-	///mat4 projectionMatrix = glm::perspective(60.0f, ((float)width()) / height(), 0.1f, 10.0f);
-
 	mat4 fullTransformMatrix = scaleMatrix * translationMatrix * rotationMatrix;
 
 	// Direction is normalized about the Y axis
 	triDirection = glm::normalize(vec3(rotationMatrix * glm::vec4(0.0f, 1.0f, 0.0f, 0.0f)));
-
-
+	vec3 uniformColor = vec3(1.0f, 0.0f, 0.0f);
 
 	glUniformMatrix4fv(fullTransformMatrixUniformLocation, 1, GL_FALSE, &fullTransformMatrix[0][0]);
+	glUniform3fv(uniformColorUniformLocation, 1, &uniformColor[0]);
 }
