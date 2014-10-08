@@ -93,6 +93,16 @@ xcopy /y /d "$(MiddlewareDir)other\bin\*.dll" "$(OutDir)"
   <ItemGroup>
     <ClInclude Include="GlWindow.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="FragmentShaderCode.glsl">
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </DeploymentContent>
+    </None>
+    <None Include="VertexShaderCode.glsl">
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </DeploymentContent>
+    </None>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

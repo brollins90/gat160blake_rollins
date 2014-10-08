@@ -1,40 +1,11 @@
 #include "GlWindow.h"
+#include <iostream>
+#include <fstream>
 #include <glm\gtx\transform.hpp>
 
 using glm::vec2;
 using glm::vec3;
 using glm::mat4;
-
-char* vertexShaderCode =
-"#version 430\r\n"
-""
-"in layout(location=0) vec3 v_position;"
-"in layout(location=1) vec3 v_color;"
-""
-"uniform mat4 fullTransformMatrix;"
-"uniform vec3 uniformColor;"
-""
-"out vec3 frag_color;"
-""
-"void main()"
-"{"
-"    vec4 v = vec4(v_position, 1.0f);"
-"    gl_Position = fullTransformMatrix * v;"
-"    frag_color = uniformColor;"
-"}"
-"";
-
-char* fragmentShaderCode =
-"#version 400\r\n"
-""
-"in vec3 frag_color;"
-"out vec4 out_color;"
-""
-"void main()"
-"{"
-"    out_color = vec4(frag_color, 1.0f);"
-"}"
-"";
 
 vec3 triPosition1, triPosition2;
 vec3 triVelocity1, triVelocity2;
@@ -65,6 +36,19 @@ void GlWindow::createProgram()
 	programID = glCreateProgram();
 }
 
+std::string readShaderCode(const char* fileName)
+{
+	std::ifstream myFile(fileName);
+	if (! myFile.good()) {
+		std::cout << "File failed to load: " << fileName << std::endl;
+		exit(1);
+	}
+	return std::string(
+		std::istreambuf_iterator<char>(myFile),
+		std::istreambuf_iterator<char>());
+
+}
+
 void GlWindow::compileShaders()
 {
 	// Create some shaders
@@ -73,9 +57,11 @@ void GlWindow::compileShaders()
 
 	// Copy the shader code into an array because the glShaderSource functions require a char**
 	const char* glslCode[1];
-	glslCode[0] = vertexShaderCode;
+	std::string temp = readShaderCode("VertexShaderCode.glsl");
+	glslCode[0] = temp.c_str();
 	glShaderSource(vertexShaderID, 1, glslCode, 0);
-	glslCode[0] = fragmentShaderCode;
+	temp = readShaderCode("FragmentShaderCode.glsl").c_str();
+	glslCode[0] = temp.c_str();
 	glShaderSource(fragmentShaderID, 1, glslCode, 0);
 
 	// Compile
