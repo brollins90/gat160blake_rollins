@@ -12,10 +12,12 @@ private:
 
 	Q_OBJECT
 
-	GLuint bufferID;
+	GLuint vertexBufferID;
+	GLuint indexBufferID;
 	GLuint programID;
 	QTimer windowTimer;
 
+	void applyTransforms();
 	void checkKeyState();
 	bool checkShaderStatus(GLuint shaderID);
 	void createProgram();
