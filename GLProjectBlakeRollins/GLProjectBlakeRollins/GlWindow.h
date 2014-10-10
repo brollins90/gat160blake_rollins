@@ -5,6 +5,10 @@
 #include <glm\glm.hpp>
 #include <Qt\qdebug.h>
 #include <QtGui\QKeyEvent>
+#include <iostream>
+#include <fstream>
+#include <glm\gtx\transform.hpp>
+
 
 class GlWindow : public QGLWidget
 {
@@ -17,11 +21,12 @@ private:
 	GLuint programID;
 	QTimer windowTimer;
 
-	void applyTransforms();
+	float distFromTriangle(glm::vec3 pos);
 	void checkKeyState();
 	bool checkShaderStatus(GLuint shaderID);
 	void createProgram();
 	void compileShaders();
+	void hillMath();
 	void sendDataToHardware();
 private slots:
 	void windowUpdate();
