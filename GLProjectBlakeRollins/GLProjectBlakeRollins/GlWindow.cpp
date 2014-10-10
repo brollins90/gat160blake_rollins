@@ -1,43 +1,82 @@
 #include "GlWindow.h"
 
-glm::vec3 triPosition1, triPosition2;
-glm::vec3 triVelocity1, triVelocity2;
-glm::vec3 triDirection1, triDirection2;
-float triAngle1, triAngle2;
-float triDepth1, triDepth2;
+glm::vec3 cubePosition;
+glm::vec3 cubeVelocity;
+glm::vec3 cubeDirection;
+glm::vec3 cubeAngles;
 const float SPEED = 0.005f;
 const float SCALE = 0.45f;
 GLint fullTransformMatrixUniformLocation;
-GLint uniformColorUniformLocation;
-GLint vertexDepthUniformLocation;
-float triScore1 = 0;
-float triScore2 = 0;
+GLint projectionUniformLocation;
 
 
 // Define the data
-GLfloat vertices[] =
+GLfloat verts[] =
 {
-	// triangle indices
-	+0.00f, +0.30f, +0.00f, +0.8f, +1.0f, +0.1f, // 0
-	-0.15f, -0.30f, +0.00f, +1.0f, +0.0f, +0.7f, // 1
-	+0.00f, -0.20f, +0.00f, +0.9f, +0.2F, +0.3f, // 2
-	+0.15f, -0.30f, +0.00f, +1.0f, +0.0f, +0.7f, // 3
-	+0.00f, -0.20f, +0.00f, +0.9f, +0.2F, +0.3f, // 4
+	-1.0f, +1.0f, +1.0f, // 0
+	+1.0f, +0.0f, +0.0f, // Color
+	+1.0f, +1.0f, +1.0f, // 1
+	+0.0f, +1.0f, +0.0f, // Color
+	+1.0f, +1.0f, -1.0f, // 2
+	+0.0f, +0.0f, +1.0f, // Color
+	-1.0f, +1.0f, -1.0f, // 3
+	+1.0f, +1.0f, +1.0f, // Color
 
-	// Hill indicis
-	+0.2f, +0.2f, +0.0f, +0.0f, 0.0f, 0.1f, // 5
-	-0.2f, +0.2f, +0.0f, +0.0f, 0.0f, 0.1f, // 6
-	-0.2f, -0.2f, +0.0f, +0.0f, 0.0f, 0.1f, // 7
-	+0.2f, -0.2f, +0.0f, +0.0f, 0.0f, 0.1f, // 8
-
-	/*
-	+0.00f, +0.30f, +0.00f, +1.0f, +0.0f, +0.0f,
-	-0.30f, -0.30f, +0.00f, +0.0f, +1.0f, +0.0f,
-	+0.30f, -0.30f, +0.00f, +0.0f, +0.0F, +1.0f,*/
+	-1.0f, +1.0f, -1.0f, // 4
+	+1.0f, +0.0f, +1.0f, // Color
+	+1.0f, +1.0f, -1.0f, // 5
+	+0.0f, +0.5f, +0.2f, // Color
+	+1.0f, -1.0f, -1.0f, // 6
+	+0.8f, +0.6f, +0.4f, // Color
+	-1.0f, -1.0f, -1.0f, // 7
+	+0.3f, +1.0f, +0.5f, // Color
+	
+	+1.0f, +1.0f, -1.0f, // 8
+	+0.2f, +0.5f, +0.2f, // Color
+	+1.0f, +1.0f, +1.0f, // 9
+	+0.9f, +0.3f, +0.7f, // Color
+	+1.0f, -1.0f, +1.0f, // 10
+	+0.3f, +0.7f, +0.5f, // Color
+	+1.0f, -1.0f, -1.0f, // 11
+	+0.5f, +0.7f, +0.5f, // Color
+	
+	-1.0f, +1.0f, +1.0f, // 12
+	+0.7f, +0.8f, +0.2f, // Color
+	-1.0f, +1.0f, -1.0f, // 13
+	+0.5f, +0.7f, +0.3f, // Color
+	-1.0f, -1.0f, -1.0f, // 14
+	+0.4f, +0.7f, +0.7f, // Color
+	-1.0f, -1.0f, +1.0f, // 15
+	+0.2f, +0.5f, +1.0f, // Color
+	
+	+1.0f, +1.0f, +1.0f, // 16
+	+0.6f, +1.0f, +0.7f, // Color
+	-1.0f, +1.0f, +1.0f, // 17
+	+0.6f, +0.4f, +0.8f, // Color
+	-1.0f, -1.0f, +1.0f, // 18
+	+0.2f, +0.8f, +0.7f, // Color
+	+1.0f, -1.0f, +1.0f, // 19
+	+0.2f, +0.7f, +1.0f, // Color
+	
+	+1.0f, -1.0f, -1.0f, // 20
+	+0.8f, +0.3f, +0.7f, // Color
+	-1.0f, -1.0f, -1.0f, // 21
+	+0.8f, +0.9f, +0.5f, // Color
+	-1.0f, -1.0f, +1.0f, // 22
+	+0.5f, +0.8f, +0.5f, // Color
+	+1.0f, -1.0f, +1.0f, // 23
+	+0.9f, +1.0f, +0.2f, // Color
 };
 
-GLushort indices[] = { 0,1,2, 0,3,4, // tri
-						5,6,7, 5,7,8 }; // hill
+GLushort indices[] = {
+	0, 1, 2, 0, 2, 3, // Top
+	4, 5, 6, 4, 6, 7, // Front
+	8, 9, 10, 8, 10, 11, // Right 
+	12, 13, 14, 12, 14, 15, // Left
+	16, 17, 18, 16, 18, 19, // Back
+	20, 22, 21, 20, 23, 22, // Bottom
+};
+
 
 bool GlWindow::checkShaderStatus(GLuint shaderID) 
 {
@@ -108,8 +147,7 @@ void GlWindow::compileShaders()
 	glUseProgram(programID);
 
 	fullTransformMatrixUniformLocation = glGetUniformLocation(programID, "fullTransformMatrix");
-	uniformColorUniformLocation = glGetUniformLocation(programID, "uniformColor");
-	vertexDepthUniformLocation = glGetUniformLocation(programID, "vertexDepth");
+	projectionUniformLocation = glGetUniformLocation(programID, "projection");
 }
 
 void GlWindow::initializeGL()
@@ -117,45 +155,12 @@ void GlWindow::initializeGL()
 	glewInit();
 	createProgram();
 
-	triPosition1 = glm::vec3(-0.5f, 0.0f, 0.0f);
-	triAngle1 = (3.141f / 4.0f);
-	triVelocity1 = glm::vec3(0.0f, 0.0f, 0.0f);
-
-	triPosition2 = glm::vec3(0.5f, 0.0f, 0.0f);
-	triAngle2 = (3.141f / 4.0f);
-	triVelocity2 = glm::vec3(0.0f, 0.0f, 0.0f);
+	cubePosition = glm::vec3(+0.0f, 0.0f, -10.0f);
+	cubeAngles = glm::vec3(0.0f, 0.0f, 0.0f);
+	cubeVelocity = glm::vec3(0.0f, 0.0f, 0.0f);
 
 	sendDataToHardware();
 	compileShaders();
-}
-
-void GlWindow::checkKeyState()
-{
-	if (GetAsyncKeyState('W')) {
-		triVelocity1 += (/*dt **/ SPEED * triDirection1);
-	}
-	if (GetAsyncKeyState('S')) {
-		triVelocity1 -= (/*dt **/ SPEED * triDirection1);
-	}
-	if (GetAsyncKeyState('A')) {
-		triAngle1 += .75;
-	}
-	if (GetAsyncKeyState('D')) {
-		triAngle1 -= .75;
-	}
-
-	if (GetAsyncKeyState(VK_UP)) {
-		triVelocity2 += (/*dt **/ SPEED * triDirection2);
-	}
-	if (GetAsyncKeyState(VK_DOWN)) {
-		triVelocity2 -= (/*dt **/ SPEED * triDirection2);
-	}
-	if (GetAsyncKeyState(VK_LEFT)) {
-		triAngle2 += .75;
-	}
-	if (GetAsyncKeyState(VK_RIGHT)) {
-		triAngle2 -= .75;
-	}
 }
 
 void GlWindow::paintGL()
@@ -163,64 +168,25 @@ void GlWindow::paintGL()
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 	glViewport(0, 0, width(), height());
 
-	// Object 1
+	// cube
 
-	triVelocity1 *= 0.9;
-	triPosition1 += triVelocity1;
+	cubeVelocity *= 0.9;
+	cubePosition += cubeVelocity;
 
-	glm::mat4 translationMatrix = glm::translate(glm::mat4(), triPosition1);
-	glm::mat4 rotationMatrix = glm::rotate(glm::mat4(), triAngle1, glm::vec3(0.0f, 0.0f, 1.0f));
+	glm::mat4 translationMatrix = glm::translate(glm::mat4(), cubePosition);
+	glm::mat4 rotationMatrix = glm::mat4();
+	rotationMatrix = glm::rotate(rotationMatrix, cubeAngles.x, glm::vec3(1.0f, 0.0f, 0.0f));
+	rotationMatrix = glm::rotate(rotationMatrix, cubeAngles.y, glm::vec3(0.0f, 1.0f, 0.0f));
+	rotationMatrix = glm::rotate(rotationMatrix, cubeAngles.z, glm::vec3(0.0f, 0.0f, 1.0f));
 	glm::mat4 scaleMatrix = glm::scale(glm::mat4(), glm::vec3(SCALE));
 	glm::mat4 fullTransformMatrix = scaleMatrix * translationMatrix * rotationMatrix;
 
-	// Direction is normalized about the Y axis
-	triDirection1 = glm::normalize(glm::vec3(rotationMatrix * glm::vec4(0.0f, 1.0f, 0.0f, 0.0f)));
-	glm::vec3 uniformColor = glm::vec3(1.0f, 0.0f, 0.0f);
+	glm::mat4 projection = glm::perspective(60.0f, ((float)width() / height()), 0.1f, 100.0f);
 
 	glUniformMatrix4fv(fullTransformMatrixUniformLocation, 1, GL_FALSE, &fullTransformMatrix[0][0]);
-	glUniform3fv(uniformColorUniformLocation, 1, &uniformColor[0]);
-	glUniform1f(vertexDepthUniformLocation, triDepth1);
+	glUniformMatrix4fv(projectionUniformLocation, 1, GL_FALSE, &projection[0][0]);
 
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, (void*)(0 * sizeof(GLushort)));
-
-
-	// Object 2
-
-	triVelocity2 *= 0.9;
-	triPosition2 += triVelocity2;
-
-	translationMatrix = glm::translate(glm::mat4(), triPosition2);
-	rotationMatrix = glm::rotate(glm::mat4(), triAngle2, glm::vec3(0.0f, 0.0f, 1.0f));
-	scaleMatrix = glm::scale(glm::mat4(), glm::vec3(SCALE));
-	fullTransformMatrix = scaleMatrix * translationMatrix * rotationMatrix;
-
-	// Direction is normalized about the Y axis
-	triDirection2 = glm::normalize(glm::vec3(rotationMatrix * glm::vec4(0.0f, 1.0f, 0.0f, 0.0f)));
-	uniformColor = glm::vec3(0.0f, 1.0f, 0.0f);
-
-	glUniformMatrix4fv(fullTransformMatrixUniformLocation, 1, GL_FALSE, &fullTransformMatrix[0][0]);
-	glUniform3fv(uniformColorUniformLocation, 1, &uniformColor[0]);
-	glUniform1f(vertexDepthUniformLocation, triDepth2);
-
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, (void*)(0 * sizeof(GLushort)));
-
-
-	// Hill
-
-	translationMatrix = glm::translate(glm::mat4(), glm::vec3(0, 0, 0));
-	rotationMatrix = glm::rotate(glm::mat4(), 0.0f, glm::vec3(0.0f, 0.0f, 1.0f));
-	scaleMatrix = glm::scale(glm::mat4(), glm::vec3(SCALE));
-	fullTransformMatrix = scaleMatrix * translationMatrix * rotationMatrix;
-
-	uniformColor = glm::vec3(0.0f, 0.0f, 1.0f);
-
-	glUniformMatrix4fv(fullTransformMatrixUniformLocation, 1, GL_FALSE, &fullTransformMatrix[0][0]);
-	glUniform3fv(uniformColorUniformLocation, 1, &uniformColor[0]);
-	glUniform1f(vertexDepthUniformLocation, 0.9f);
-
-
-	//glDrawArrays(GL_TRIANGLES, 0, 6);
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, (void*)(6 * sizeof(GLushort)));
+	glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_SHORT, (void*)(0 * sizeof(GLushort)));
 }
 
 void GlWindow::sendDataToHardware()
@@ -229,7 +195,7 @@ void GlWindow::sendDataToHardware()
 	// Create a buffer in graphics ram
 	glGenBuffers(1, &vertexBufferID);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_STATIC_DRAW);
 
 	// Register the timer callback
 	connect(&windowTimer, SIGNAL(timeout()), this, SLOT(windowUpdate()));
@@ -239,10 +205,10 @@ void GlWindow::sendDataToHardware()
 	GLuint vPositionLocation = 0;
 	glEnableVertexAttribArray(vPositionLocation);
 	glVertexAttribPointer(vPositionLocation, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GL_FLOAT), 0);
-
 	GLuint vColorLocation = 1;
 	glEnableVertexAttribArray(vColorLocation);
 	glVertexAttribPointer(vColorLocation, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GL_FLOAT), (void*)(3 * sizeof(GL_FLOAT)));
+
 	glGenBuffers(1, &indexBufferID);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferID);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
@@ -251,58 +217,9 @@ void GlWindow::sendDataToHardware()
 // Timer callback
 void GlWindow::windowUpdate()
 {
-	qDebug() << triScore1 << " " << triScore2;
-	hillMath();
-	checkKeyState();
+	cubeAngles.x += .1f;
+	cubeAngles.y += .1f;
+	cubeAngles.z += .1f;
 	repaint();
 }
 
-
-float GlWindow::distFromTriangle(glm::vec3 pos) {
-
-	return glm::distance(pos, glm::vec3(0, 0, 0));
-
-	//float distMin = 1;
-	//mat4 triTrans = glm::translate(mat4(), pos);
-	//mat4 hillTrans = glm::translate(mat4(), vec3(0, 0, 0));
-	//for (int i = 0; i < 6; i++) {
-
-	//	vec3 trianglepoint = vec3(vertices[(indices[i] * 6) + 0], vertices[(indices[i] * 6) + 1], vertices[(indices[i] * 6) + 2]);
-
-	//	//qDebug() << trianglepoint.x; 
-	//	trianglepoint = vec3(triTrans * glm::vec4(trianglepoint, 0));
-
-	//	//qDebug() << trianglepoint.x;
-
-	//	for (int j = 6; j < 12; j++) {
-	//		vec3 hillpoint = vec3(vertices[(indices[j] * 6) + 0], vertices[(indices[j] * 6) + 1], vertices[(indices[j] * 6) + 2]);
-	//		hillpoint = vec3(hillTrans * glm::vec4(hillpoint, 0));
-
-	//		float dist = glm::distance(hillpoint, trianglepoint);
-	//		if (dist < distMin) {
-	//			distMin = dist;
-	//		}
-	//	}
-	//}
-	////qDebug() << distMin;
-	//return distMin;
-}
-
-void GlWindow::hillMath()
-{
-	if (distFromTriangle(triPosition1) < .3) {
-		triScore1 += 0.01f;
-	}
-	if (distFromTriangle(triPosition2) < .3) {
-		triScore2 += 0.01f;
-	}
-
-	if (triScore1 > triScore2) {
-		triDepth1 = -0.7f;
-		triDepth2 = +0.7f;
-	}
-	else {
-		triDepth1 = +0.7f;
-		triDepth2 = -0.7f;
-	}
-}
