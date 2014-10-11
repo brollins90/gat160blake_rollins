@@ -10,75 +10,11 @@ GLint fullTransformMatrixUniformLocation;
 GLint MVPLocation;
 Camera camera;
 
-GLfloat verts[] =
-{
-	-1.0f, +1.0f, +1.0f, // 0
-	+1.0f, +0.0f, +0.0f, // Color
-	+1.0f, +1.0f, +1.0f, // 1
-	+0.0f, +1.0f, +0.0f, // Color
-	+1.0f, +1.0f, -1.0f, // 2
-	+0.0f, +0.0f, +1.0f, // Color
-	-1.0f, +1.0f, -1.0f, // 3
-	+1.0f, +1.0f, +1.0f, // Color
-
-	-1.0f, +1.0f, -1.0f, // 4
-	+1.0f, +0.0f, +1.0f, // Color
-	+1.0f, +1.0f, -1.0f, // 5
-	+0.0f, +0.5f, +0.2f, // Color
-	+1.0f, -1.0f, -1.0f, // 6
-	+0.8f, +0.6f, +0.4f, // Color
-	-1.0f, -1.0f, -1.0f, // 7
-	+0.3f, +1.0f, +0.5f, // Color
-
-	+1.0f, +1.0f, -1.0f, // 8
-	+0.2f, +0.5f, +0.2f, // Color
-	+1.0f, +1.0f, +1.0f, // 9
-	+0.9f, +0.3f, +0.7f, // Color
-	+1.0f, -1.0f, +1.0f, // 10
-	+0.3f, +0.7f, +0.5f, // Color
-	+1.0f, -1.0f, -1.0f, // 11
-	+0.5f, +0.7f, +0.5f, // Color
-
-	-1.0f, +1.0f, +1.0f, // 12
-	+0.7f, +0.8f, +0.2f, // Color
-	-1.0f, +1.0f, -1.0f, // 13
-	+0.5f, +0.7f, +0.3f, // Color
-	-1.0f, -1.0f, -1.0f, // 14
-	+0.4f, +0.7f, +0.7f, // Color
-	-1.0f, -1.0f, +1.0f, // 15
-	+0.2f, +0.5f, +1.0f, // Color
-
-	+1.0f, +1.0f, +1.0f, // 16
-	+0.6f, +1.0f, +0.7f, // Color
-	-1.0f, +1.0f, +1.0f, // 17
-	+0.6f, +0.4f, +0.8f, // Color
-	-1.0f, -1.0f, +1.0f, // 18
-	+0.2f, +0.8f, +0.7f, // Color
-	+1.0f, -1.0f, +1.0f, // 19
-	+0.2f, +0.7f, +1.0f, // Color
-
-	+1.0f, -1.0f, -1.0f, // 20
-	+0.8f, +0.3f, +0.7f, // Color
-	-1.0f, -1.0f, -1.0f, // 21
-	+0.8f, +0.9f, +0.5f, // Color
-	-1.0f, -1.0f, +1.0f, // 22
-	+0.5f, +0.8f, +0.5f, // Color
-	+1.0f, -1.0f, +1.0f, // 23
-	+0.9f, +1.0f, +0.2f, // Color
-};
-
-GLushort indices[] = {
-	0, 1, 2, 0, 2, 3, // Top
-	4, 5, 6, 4, 6, 7, // Front
-	8, 9, 10, 8, 10, 11, // Right 
-	12, 13, 14, 12, 14, 15, // Left
-	16, 17, 18, 16, 18, 19, // Back
-	20, 22, 21, 20, 23, 22, // Bottom
-};
-
 const uint NUM_VERTICES_PER_TRI = 3;
-const uint NUM_FLOATS_PER_VERTICE = 6;
+const uint NUM_FLOATS_PER_VERTICE = sizeof(Neumont::Vertex) / sizeof(float);
 const uint VERTEX_BYTE_SIZE = NUM_FLOATS_PER_VERTICE * sizeof(float);
+uint numVerts;
+uint numIndices;
 
 bool GlWindow::checkShaderStatus(GLuint shaderID) 
 {
@@ -179,17 +115,17 @@ void GlWindow::paintGL()
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 	glViewport(0, 0, width(), height());
 
-	glDrawElementsInstanced(GL_TRIANGLES, 36, GL_UNSIGNED_SHORT, (void*)(0 * sizeof(GLushort)), 2);
+	glDrawElementsInstanced(GL_TRIANGLES, numIndices, GL_UNSIGNED_SHORT, (void*)(0 * sizeof(GLushort)), 2);
 }
 
 void GlWindow::sendDataToHardware()
 {
-	//Neumont::ShapeData shape = Neumont::ShapeGenerator::makeCube();
+	Neumont::ShapeData shape = Neumont::ShapeGenerator::makeCube();
 
 	GLuint vertexBufferID;
 	glGenBuffers(1, &vertexBufferID);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, shape.vertexBufferSize(), shape.verts, GL_STATIC_DRAW);
 	glEnableVertexAttribArray(0); // v_position
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, 0);
 	glEnableVertexAttribArray(1); // v_color
@@ -198,7 +134,10 @@ void GlWindow::sendDataToHardware()
 	GLuint indexArrayBufferID;
 	glGenBuffers(1, &indexArrayBufferID);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexArrayBufferID);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, shape.indexBufferSize(), shape.indices, GL_STATIC_DRAW);
+
+	numVerts = shape.numVerts;
+	numIndices = shape.numIndices;
 
 	GLuint transformationMatrixBufferID;
 	glGenBuffers(1, &transformationMatrixBufferID);

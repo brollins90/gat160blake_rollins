@@ -2,7 +2,7 @@
 
 in layout(location=0) vec3 v_position;
 in layout(location=1) vec3 v_color;
-in layout(location=2) mat4 v_mvp;
+in layout(location=2) mat4 v_mvp; // takes locations 2-5
 
 out vec3 frag_color;
 
