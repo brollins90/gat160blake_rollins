@@ -1,13 +1,11 @@
 #include "GlWindow.h"
 
-glm::vec3 cubePosition;
-glm::vec3 cubeVelocity;
-glm::vec3 cubeDirection;
-glm::vec3 cubeAngles;
+glm::vec3 cubePosition, cubeVelocity, cubeDirection, cubeAngles;
+glm::vec3 camPosition;
 const float SPEED = 0.005f;
 const float SCALE = 0.45f;
 GLint fullTransformMatrixUniformLocation;
-GLint projectionUniformLocation;
+GLint MVPLocation;
 
 
 // Define the data
@@ -147,7 +145,7 @@ void GlWindow::compileShaders()
 	glUseProgram(programID);
 
 	fullTransformMatrixUniformLocation = glGetUniformLocation(programID, "fullTransformMatrix");
-	projectionUniformLocation = glGetUniformLocation(programID, "projection");
+	MVPLocation = glGetUniformLocation(programID, "MVP");
 }
 
 void GlWindow::initializeGL()
@@ -155,9 +153,11 @@ void GlWindow::initializeGL()
 	glewInit();
 	createProgram();
 
-	cubePosition = glm::vec3(+0.0f, 0.0f, -10.0f);
+	cubePosition = glm::vec3(+0.0f, 0.0f, -1.0f);
 	cubeAngles = glm::vec3(0.0f, 0.0f, 0.0f);
 	cubeVelocity = glm::vec3(0.0f, 0.0f, 0.0f);
+
+	camPosition = glm::vec3(0.0f, -5.0f, -10.0f);
 
 	sendDataToHardware();
 	compileShaders();
@@ -166,25 +166,28 @@ void GlWindow::initializeGL()
 void GlWindow::paintGL()
 {
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-	glViewport(0, 0, width(), height());
+	//glViewport(0, 0, width(), height());
+	
+	// model
+	glm::mat4 scaleMatrix = glm::scale(glm::mat4(), glm::vec3(SCALE)); // scale by our scale value
+	glm::mat4 rotationMatrix = glm::mat4(); 
+	rotationMatrix = glm::rotate(rotationMatrix, cubeAngles.x, glm::vec3(1.0f, 0.0f, 0.0f)); // rotate x
+	rotationMatrix = glm::rotate(rotationMatrix, cubeAngles.y, glm::vec3(0.0f, 1.0f, 0.0f)); // rotate y
+	rotationMatrix = glm::rotate(rotationMatrix, cubeAngles.z, glm::vec3(0.0f, 0.0f, 1.0f)); // rotate z
+	glm::mat4 translationMatrix = glm::translate(glm::mat4(), cubePosition); // translate
+	glm::mat4 model = translationMatrix * rotationMatrix * scaleMatrix * glm::mat4(1.0f); // combine
 
-	// cube
+	// Camera - view
+	glm::mat4 view = glm::lookAt(
+		camPosition, // camera location in world space
+		glm::vec3(0.0f, 0.0f, 0.0f), // Looking at the origin
+		glm::vec3(0.0f, 1.0f, 0.0f)); // y is up
 
-	cubeVelocity *= 0.9;
-	cubePosition += cubeVelocity;
+	// projection 
+	glm::mat4 projection = glm::perspective(45.0f, 4.0f / 3.0f, 0.1f, 100.0f);
 
-	glm::mat4 translationMatrix = glm::translate(glm::mat4(), cubePosition);
-	glm::mat4 rotationMatrix = glm::mat4();
-	rotationMatrix = glm::rotate(rotationMatrix, cubeAngles.x, glm::vec3(1.0f, 0.0f, 0.0f));
-	rotationMatrix = glm::rotate(rotationMatrix, cubeAngles.y, glm::vec3(0.0f, 1.0f, 0.0f));
-	rotationMatrix = glm::rotate(rotationMatrix, cubeAngles.z, glm::vec3(0.0f, 0.0f, 1.0f));
-	glm::mat4 scaleMatrix = glm::scale(glm::mat4(), glm::vec3(SCALE));
-	glm::mat4 fullTransformMatrix = scaleMatrix * translationMatrix * rotationMatrix;
-
-	glm::mat4 projection = glm::perspective(60.0f, ((float)width() / height()), 0.1f, 100.0f);
-
-	glUniformMatrix4fv(fullTransformMatrixUniformLocation, 1, GL_FALSE, &fullTransformMatrix[0][0]);
-	glUniformMatrix4fv(projectionUniformLocation, 1, GL_FALSE, &projection[0][0]);
+	glm::mat4 MVP = projection * view * model;
+	glUniformMatrix4fv(MVPLocation, 1, GL_FALSE, &MVP[0][0]);
 
 	glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_SHORT, (void*)(0 * sizeof(GLushort)));
 }
