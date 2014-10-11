@@ -178,24 +178,6 @@ void GlWindow::paintGL()
 {
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 	glViewport(0, 0, width(), height());
-	
-	//// model
-	//glm::mat4 scaleMatrix = glm::scale(glm::mat4(), glm::vec3(SCALE)); // scale by our scale value
-	//glm::mat4 rotationMatrix = glm::mat4(); 
-	//rotationMatrix = glm::rotate(rotationMatrix, cubeAngles.x, glm::vec3(1.0f, 0.0f, 0.0f)); // rotate x
-	//rotationMatrix = glm::rotate(rotationMatrix, cubeAngles.y, glm::vec3(0.0f, 1.0f, 0.0f)); // rotate y
-	//rotationMatrix = glm::rotate(rotationMatrix, cubeAngles.z, glm::vec3(0.0f, 0.0f, 1.0f)); // rotate z
-	//glm::mat4 translationMatrix = glm::translate(glm::mat4(), cubePosition); // translate
-	//glm::mat4 model = translationMatrix * rotationMatrix * scaleMatrix * glm::mat4(1.0f); // combine
-
-	//// Camera - view
-	//glm::mat4 view = camera.getWorldToViewMatrix();
-
-	//// projection 
-	//glm::mat4 projection = glm::perspective(60.0f, ((float)width() / height()), 0.1f, 10.0f);
-
-	//glm::mat4 MVP = projection * view * model;
-	//glUniformMatrix4fv(MVPLocation, 1, GL_FALSE, &MVP[0][0]);
 
 	glDrawElementsInstanced(GL_TRIANGLES, 36, GL_UNSIGNED_SHORT, (void*)(0 * sizeof(GLushort)), 2);
 }
@@ -229,18 +211,12 @@ void GlWindow::sendDataToHardware()
 		projectionMatrix * camera.getWorldToViewMatrix() * glm::translate(glm::vec3(1.0f, 0.0f, -3.75f)) * glm::rotate(126.0f, glm::vec3(0.0f, 1.0f, 0.0f)),
 	};
 	glBufferData(GL_ARRAY_BUFFER, sizeof(fullTransforms), fullTransforms, GL_STATIC_DRAW);
-	glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(sizeof(GL_FLOAT) * 0));
-	glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(sizeof(GL_FLOAT) * 4));
-	glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(sizeof(GL_FLOAT) * 8));
-	glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(sizeof(GL_FLOAT) * 12));
-	glEnableVertexAttribArray(2);
-	glEnableVertexAttribArray(3);
-	glEnableVertexAttribArray(4);
-	glEnableVertexAttribArray(5);
-	glVertexAttribDivisor(2, 1);
-	glVertexAttribDivisor(3, 1);
-	glVertexAttribDivisor(4, 1);
-	glVertexAttribDivisor(5, 1);
+	// attribs can only be a max of size 4 so a mat4 needs 4 seperate attribs
+	for (int i = 0; i < 4; i++) {
+		glVertexAttribPointer(i + 2, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(sizeof(GL_FLOAT) * (i * 4)));
+		glEnableVertexAttribArray(i + 2);
+		glVertexAttribDivisor(i + 2, 1);
+	}
 }
 
 // Timer callback
