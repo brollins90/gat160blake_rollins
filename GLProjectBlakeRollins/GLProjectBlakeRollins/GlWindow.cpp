@@ -1,4 +1,6 @@
 #include "GlWindow.h"
+#include <ShapeGenerator.h>
+#include <ShapeData.h>
 
 glm::vec3 cubePosition, cubeVelocity, cubeDirection, cubeAngles;
 glm::vec3 camPosition;
@@ -6,9 +8,8 @@ const float SPEED = 0.005f;
 const float SCALE = 0.45f;
 GLint fullTransformMatrixUniformLocation;
 GLint MVPLocation;
+Camera camera;
 
-
-// Define the data
 GLfloat verts[] =
 {
 	-1.0f, +1.0f, +1.0f, // 0
@@ -28,7 +29,7 @@ GLfloat verts[] =
 	+0.8f, +0.6f, +0.4f, // Color
 	-1.0f, -1.0f, -1.0f, // 7
 	+0.3f, +1.0f, +0.5f, // Color
-	
+
 	+1.0f, +1.0f, -1.0f, // 8
 	+0.2f, +0.5f, +0.2f, // Color
 	+1.0f, +1.0f, +1.0f, // 9
@@ -37,7 +38,7 @@ GLfloat verts[] =
 	+0.3f, +0.7f, +0.5f, // Color
 	+1.0f, -1.0f, -1.0f, // 11
 	+0.5f, +0.7f, +0.5f, // Color
-	
+
 	-1.0f, +1.0f, +1.0f, // 12
 	+0.7f, +0.8f, +0.2f, // Color
 	-1.0f, +1.0f, -1.0f, // 13
@@ -46,7 +47,7 @@ GLfloat verts[] =
 	+0.4f, +0.7f, +0.7f, // Color
 	-1.0f, -1.0f, +1.0f, // 15
 	+0.2f, +0.5f, +1.0f, // Color
-	
+
 	+1.0f, +1.0f, +1.0f, // 16
 	+0.6f, +1.0f, +0.7f, // Color
 	-1.0f, +1.0f, +1.0f, // 17
@@ -55,7 +56,7 @@ GLfloat verts[] =
 	+0.2f, +0.8f, +0.7f, // Color
 	+1.0f, -1.0f, +1.0f, // 19
 	+0.2f, +0.7f, +1.0f, // Color
-	
+
 	+1.0f, -1.0f, -1.0f, // 20
 	+0.8f, +0.3f, +0.7f, // Color
 	-1.0f, -1.0f, -1.0f, // 21
@@ -75,6 +76,9 @@ GLushort indices[] = {
 	20, 22, 21, 20, 23, 22, // Bottom
 };
 
+const uint NUM_VERTICES_PER_TRI = 3;
+const uint NUM_FLOATS_PER_VERTICE = 6;
+const uint VERTEX_BYTE_SIZE = NUM_FLOATS_PER_VERTICE * sizeof(float);
 
 bool GlWindow::checkShaderStatus(GLuint shaderID) 
 {
@@ -141,6 +145,9 @@ void GlWindow::compileShaders()
 	// Link
 	glLinkProgram(programID);
 
+	glDeleteShader(vertexShaderID);
+	glDeleteShader(fragmentShaderID);
+
 	// Tell the hardware to use our stuff and not the default shaders
 	glUseProgram(programID);
 
@@ -152,8 +159,12 @@ void GlWindow::initializeGL()
 {
 	glewInit();
 	createProgram();
+	// Register the timer callback
+	connect(&windowTimer, SIGNAL(timeout()), this, SLOT(windowUpdate()));
+	windowTimer.start(0);
 
-	cubePosition = glm::vec3(+0.0f, 0.0f, -1.0f);
+
+	cubePosition = glm::vec3(+0.0f, 0.0f, -3.0f);
 	cubeAngles = glm::vec3(0.0f, 0.0f, 0.0f);
 	cubeVelocity = glm::vec3(0.0f, 0.0f, 0.0f);
 
@@ -166,55 +177,70 @@ void GlWindow::initializeGL()
 void GlWindow::paintGL()
 {
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-	//glViewport(0, 0, width(), height());
+	glViewport(0, 0, width(), height());
 	
-	// model
-	glm::mat4 scaleMatrix = glm::scale(glm::mat4(), glm::vec3(SCALE)); // scale by our scale value
-	glm::mat4 rotationMatrix = glm::mat4(); 
-	rotationMatrix = glm::rotate(rotationMatrix, cubeAngles.x, glm::vec3(1.0f, 0.0f, 0.0f)); // rotate x
-	rotationMatrix = glm::rotate(rotationMatrix, cubeAngles.y, glm::vec3(0.0f, 1.0f, 0.0f)); // rotate y
-	rotationMatrix = glm::rotate(rotationMatrix, cubeAngles.z, glm::vec3(0.0f, 0.0f, 1.0f)); // rotate z
-	glm::mat4 translationMatrix = glm::translate(glm::mat4(), cubePosition); // translate
-	glm::mat4 model = translationMatrix * rotationMatrix * scaleMatrix * glm::mat4(1.0f); // combine
+	//// model
+	//glm::mat4 scaleMatrix = glm::scale(glm::mat4(), glm::vec3(SCALE)); // scale by our scale value
+	//glm::mat4 rotationMatrix = glm::mat4(); 
+	//rotationMatrix = glm::rotate(rotationMatrix, cubeAngles.x, glm::vec3(1.0f, 0.0f, 0.0f)); // rotate x
+	//rotationMatrix = glm::rotate(rotationMatrix, cubeAngles.y, glm::vec3(0.0f, 1.0f, 0.0f)); // rotate y
+	//rotationMatrix = glm::rotate(rotationMatrix, cubeAngles.z, glm::vec3(0.0f, 0.0f, 1.0f)); // rotate z
+	//glm::mat4 translationMatrix = glm::translate(glm::mat4(), cubePosition); // translate
+	//glm::mat4 model = translationMatrix * rotationMatrix * scaleMatrix * glm::mat4(1.0f); // combine
 
-	// Camera - view
-	glm::mat4 view = glm::lookAt(
-		camPosition, // camera location in world space
-		glm::vec3(0.0f, 0.0f, 0.0f), // Looking at the origin
-		glm::vec3(0.0f, 1.0f, 0.0f)); // y is up
+	//// Camera - view
+	//glm::mat4 view = camera.getWorldToViewMatrix();
 
-	// projection 
-	glm::mat4 projection = glm::perspective(45.0f, 4.0f / 3.0f, 0.1f, 100.0f);
+	//// projection 
+	//glm::mat4 projection = glm::perspective(60.0f, ((float)width() / height()), 0.1f, 10.0f);
 
-	glm::mat4 MVP = projection * view * model;
-	glUniformMatrix4fv(MVPLocation, 1, GL_FALSE, &MVP[0][0]);
+	//glm::mat4 MVP = projection * view * model;
+	//glUniformMatrix4fv(MVPLocation, 1, GL_FALSE, &MVP[0][0]);
 
-	glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_SHORT, (void*)(0 * sizeof(GLushort)));
+	glDrawElementsInstanced(GL_TRIANGLES, 36, GL_UNSIGNED_SHORT, (void*)(0 * sizeof(GLushort)), 2);
 }
 
 void GlWindow::sendDataToHardware()
 {
+	//Neumont::ShapeData shape = Neumont::ShapeGenerator::makeCube();
 
-	// Create a buffer in graphics ram
+	GLuint vertexBufferID;
 	glGenBuffers(1, &vertexBufferID);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_STATIC_DRAW);
+	glEnableVertexAttribArray(0); // v_position
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, 0);
+	glEnableVertexAttribArray(1); // v_color
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(3 * sizeof(GL_FLOAT)));
 
-	// Register the timer callback
-	connect(&windowTimer, SIGNAL(timeout()), this, SLOT(windowUpdate()));
-	windowTimer.start(0);
-
-	// define the data attributes so we can reference the data later
-	GLuint vPositionLocation = 0;
-	glEnableVertexAttribArray(vPositionLocation);
-	glVertexAttribPointer(vPositionLocation, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GL_FLOAT), 0);
-	GLuint vColorLocation = 1;
-	glEnableVertexAttribArray(vColorLocation);
-	glVertexAttribPointer(vColorLocation, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GL_FLOAT), (void*)(3 * sizeof(GL_FLOAT)));
-
-	glGenBuffers(1, &indexBufferID);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferID);
+	GLuint indexArrayBufferID;
+	glGenBuffers(1, &indexArrayBufferID);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexArrayBufferID);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+	GLuint transformationMatrixBufferID;
+	glGenBuffers(1, &transformationMatrixBufferID);
+	glBindBuffer(GL_ARRAY_BUFFER, transformationMatrixBufferID);
+
+	glm::mat4 projectionMatrix = glm::perspective(60.0f, ((float)width() / height()), 0.1f, 10.0f);
+	glm::mat4 fullTransforms[] =
+	{
+		projectionMatrix * camera.getWorldToViewMatrix() * glm::translate(glm::vec3(-1.0f, 0.0f, -3.0f)) * glm::rotate(36.0f, glm::vec3(1.0f, 0.0f, 0.0f)),
+		projectionMatrix * camera.getWorldToViewMatrix() * glm::translate(glm::vec3(1.0f, 0.0f, -3.75f)) * glm::rotate(126.0f, glm::vec3(0.0f, 1.0f, 0.0f)),
+	};
+	glBufferData(GL_ARRAY_BUFFER, sizeof(fullTransforms), fullTransforms, GL_STATIC_DRAW);
+	glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(sizeof(GL_FLOAT) * 0));
+	glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(sizeof(GL_FLOAT) * 4));
+	glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(sizeof(GL_FLOAT) * 8));
+	glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(sizeof(GL_FLOAT) * 12));
+	glEnableVertexAttribArray(2);
+	glEnableVertexAttribArray(3);
+	glEnableVertexAttribArray(4);
+	glEnableVertexAttribArray(5);
+	glVertexAttribDivisor(2, 1);
+	glVertexAttribDivisor(3, 1);
+	glVertexAttribDivisor(4, 1);
+	glVertexAttribDivisor(5, 1);
 }
 
 // Timer callback
@@ -226,3 +252,8 @@ void GlWindow::windowUpdate()
 	repaint();
 }
 
+GlWindow::~GlWindow()
+{
+	glUseProgram(0);
+	glDeleteProgram(programID);
+}

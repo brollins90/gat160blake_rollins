@@ -1,13 +1,15 @@
 #pragma once
 #include <GL\glew.h>
 #include <QtOpenGl\qglwidget>
+#include <iostream>
+#include <fstream>
+#include <glm\gtx\transform.hpp>
 #include <Qt\qtimer.h>
 #include <glm\glm.hpp>
 #include <Qt\qdebug.h>
 #include <QtGui\QKeyEvent>
-#include <iostream>
-#include <fstream>
-#include <glm\gtx\transform.hpp>
+#include "Camera.h"
+//#include "cube.h"
 
 
 class GlWindow : public QGLWidget
@@ -34,4 +36,5 @@ protected:
 	void initializeGL();
 	void paintGL();
 public:
+	~GlWindow();
 };
