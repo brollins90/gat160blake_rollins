@@ -90,7 +90,6 @@ xcopy /y /d "$(MiddlewareDir)NeumontTools\bin\*.dll" "$(OutDir)"</Command>
     <ClCompile Include="GlWindow.cpp" />
     <ClCompile Include="GlWindow._moc.cpp" />
     <ClCompile Include="Main.cpp" />
-    <ClCompile Include="cube.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
