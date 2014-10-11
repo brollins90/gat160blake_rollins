@@ -94,11 +94,11 @@ xcopy /y /d "$(MiddlewareDir)NeumontTools\bin\*.dll" "$(OutDir)"</Command>
     <ClInclude Include="GlWindow.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="FragmentShaderCode.glsl">
+    <None Include="Shaders\FragmentShaderCode.glsl">
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </DeploymentContent>
     </None>
-    <None Include="VertexShaderCode.glsl">
+    <None Include="Shaders\VertexShaderCode.glsl">
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </DeploymentContent>
     </None>

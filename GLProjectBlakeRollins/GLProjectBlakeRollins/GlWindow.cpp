@@ -119,10 +119,10 @@ void GlWindow::compileShaders()
 
 	// Copy the shader code into an array because the glShaderSource functions require a char**
 	const char* glslCode[1];
-	std::string temp = readShaderCode("VertexShaderCode.glsl");
+	std::string temp = readShaderCode("Shaders/VertexShaderCode.glsl");
 	glslCode[0] = temp.c_str();
 	glShaderSource(vertexShaderID, 1, glslCode, 0);
-	temp = readShaderCode("FragmentShaderCode.glsl").c_str();
+	temp = readShaderCode("Shaders/FragmentShaderCode.glsl").c_str();
 	glslCode[0] = temp.c_str();
 	glShaderSource(fragmentShaderID, 1, glslCode, 0);
 
