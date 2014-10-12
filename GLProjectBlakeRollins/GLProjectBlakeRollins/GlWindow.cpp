@@ -2,12 +2,6 @@
 #include <ShapeGenerator.h>
 #include <ShapeData.h>
 
-glm::vec3 cubePosition, cubeVelocity, cubeDirection, cubeAngles;
-glm::vec3 camPosition;
-const float SPEED = 0.005f;
-const float SCALE = 0.45f;
-GLint fullTransformMatrixUniformLocation;
-GLint MVPLocation;
 Camera camera;
 
 const uint NUM_VERTICES_PER_TRI = 3;
@@ -46,18 +40,15 @@ std::string readShaderCode(const char* fileName)
 	return std::string(
 		std::istreambuf_iterator<char>(myFile),
 		std::istreambuf_iterator<char>());
-
 }
 
 void GlWindow::compileShaders()
 {
 	glEnable(GL_DEPTH_TEST);
 
-	// Create some shaders
 	GLuint vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
 	GLuint fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
 
-	// Copy the shader code into an array because the glShaderSource functions require a char**
 	const char* glslCode[1];
 	std::string temp = readShaderCode("Shaders/VertexShaderCode.glsl");
 	glslCode[0] = temp.c_str();
@@ -66,45 +57,31 @@ void GlWindow::compileShaders()
 	glslCode[0] = temp.c_str();
 	glShaderSource(fragmentShaderID, 1, glslCode, 0);
 
-	// Compile
 	glCompileShader(vertexShaderID);
 	glCompileShader(fragmentShaderID);
 
-	// Check for errors in compilation
 	checkShaderStatus(vertexShaderID);
 	checkShaderStatus(fragmentShaderID);
 
-	// attach the shaders
 	glAttachShader(programID, vertexShaderID);
 	glAttachShader(programID, fragmentShaderID);
 
-	// Link
 	glLinkProgram(programID);
 
 	glDeleteShader(vertexShaderID);
 	glDeleteShader(fragmentShaderID);
 
-	// Tell the hardware to use our stuff and not the default shaders
 	glUseProgram(programID);
-
-	fullTransformMatrixUniformLocation = glGetUniformLocation(programID, "fullTransformMatrix");
-	MVPLocation = glGetUniformLocation(programID, "MVP");
 }
 
 void GlWindow::initializeGL()
 {
 	glewInit();
+	setMouseTracking(true);
 	createProgram();
-	// Register the timer callback
+
 	connect(&windowTimer, SIGNAL(timeout()), this, SLOT(windowUpdate()));
 	windowTimer.start(0);
-
-
-	cubePosition = glm::vec3(+0.0f, 0.0f, -3.0f);
-	cubeAngles = glm::vec3(0.0f, 0.0f, 0.0f);
-	cubeVelocity = glm::vec3(0.0f, 0.0f, 0.0f);
-
-	camPosition = glm::vec3(0.0f, -5.0f, -10.0f);
 
 	sendDataToHardware();
 	compileShaders();
@@ -112,6 +89,14 @@ void GlWindow::initializeGL()
 
 void GlWindow::paintGL()
 {
+	glm::mat4 projectionMatrix = glm::perspective(60.0f, ((float)width() / height()), 0.1f, 10.0f);
+	glm::mat4 fullTransforms[] =
+	{
+		projectionMatrix * camera.getWorldToViewMatrix() * glm::translate(glm::vec3(-1.0f, 0.0f, -3.0f)) * glm::rotate(36.0f, glm::vec3(1.0f, 0.0f, 0.0f)),
+		projectionMatrix * camera.getWorldToViewMatrix() * glm::translate(glm::vec3(1.0f, 0.0f, -3.75f)) * glm::rotate(126.0f, glm::vec3(0.0f, 1.0f, 0.0f)),
+	};
+	glBufferData(GL_ARRAY_BUFFER, sizeof(fullTransforms), fullTransforms, GL_DYNAMIC_DRAW);
+
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 	glViewport(0, 0, width(), height());
 
@@ -143,13 +128,7 @@ void GlWindow::sendDataToHardware()
 	glGenBuffers(1, &transformationMatrixBufferID);
 	glBindBuffer(GL_ARRAY_BUFFER, transformationMatrixBufferID);
 
-	glm::mat4 projectionMatrix = glm::perspective(60.0f, ((float)width() / height()), 0.1f, 10.0f);
-	glm::mat4 fullTransforms[] =
-	{
-		projectionMatrix * camera.getWorldToViewMatrix() * glm::translate(glm::vec3(-1.0f, 0.0f, -3.0f)) * glm::rotate(36.0f, glm::vec3(1.0f, 0.0f, 0.0f)),
-		projectionMatrix * camera.getWorldToViewMatrix() * glm::translate(glm::vec3(1.0f, 0.0f, -3.75f)) * glm::rotate(126.0f, glm::vec3(0.0f, 1.0f, 0.0f)),
-	};
-	glBufferData(GL_ARRAY_BUFFER, sizeof(fullTransforms), fullTransforms, GL_STATIC_DRAW);
+	//glBufferData(GL_ARRAY_BUFFER, sizeof(glm::mat4) * 2, 0, GL_DYNAMIC_DRAW);
 	// attribs can only be a max of size 4 so a mat4 needs 4 seperate attribs
 	for (int i = 0; i < 4; i++) {
 		glVertexAttribPointer(i + 2, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(sizeof(GL_FLOAT) * (i * 4)));
@@ -161,9 +140,6 @@ void GlWindow::sendDataToHardware()
 // Timer callback
 void GlWindow::windowUpdate()
 {
-	cubeAngles.x += .1f;
-	cubeAngles.y += .1f;
-	cubeAngles.z += .1f;
 	repaint();
 }
 
@@ -171,4 +147,10 @@ GlWindow::~GlWindow()
 {
 	glUseProgram(0);
 	glDeleteProgram(programID);
+}
+
+void GlWindow::mouseMoveEvent(QMouseEvent* e)
+{
+	camera.mouseUpdate(glm::vec2(e->x(), e->y()));
+	repaint();
 }

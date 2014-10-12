@@ -8,6 +8,7 @@
 #include <glm\glm.hpp>
 #include <Qt\qdebug.h>
 #include <QtGui\QKeyEvent>
+#include <QtGui\qmouseevent>
 #include "Camera.h"
 //#include "cube.h"
 
@@ -26,6 +27,7 @@ private:
 	float distFromTriangle(glm::vec3 pos);
 	void checkKeyState();
 	bool checkShaderStatus(GLuint shaderID);
+//	bool checkProgramStatus(GLuint programID);
 	void createProgram();
 	void compileShaders();
 	void hillMath();
@@ -35,6 +37,7 @@ private slots:
 protected:
 	void initializeGL();
 	void paintGL();
+	void mouseMoveEvent(QMouseEvent*);
 public:
 	~GlWindow();
 };
