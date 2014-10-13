@@ -5,6 +5,7 @@
 class Camera
 {
 private:
+	int invertView;
 	glm::vec2 oldMousePosition;
 	glm::vec3 position;
 	glm::vec3 viewDirection;
