@@ -140,6 +140,7 @@ void GlWindow::sendDataToHardware()
 // Timer callback
 void GlWindow::windowUpdate()
 {
+	checkKeyState();
 	repaint();
 }
 
@@ -155,31 +156,27 @@ void GlWindow::mouseMoveEvent(QMouseEvent* e)
 	repaint();
 }
 
-void GlWindow::keyPressEvent(QKeyEvent* e)
+void GlWindow::checkKeyState()
 {
-	switch (e->key())
-	{
-	case Qt::Key::Key_W:
+	if (GetAsyncKeyState('W')) {
 		camera.moveForward();
-		break;
-	case Qt::Key::Key_S:
+	}
+	if (GetAsyncKeyState('S')) {
 		camera.moveBackward();
-		break;
-	case Qt::Key::Key_A:
+	}
+	if (GetAsyncKeyState('A')) {
 		camera.strafeLeft();
-		break;
-	case Qt::Key::Key_D:
+	}
+	if (GetAsyncKeyState('D')) {
 		camera.strafeRight();
-		break;
-	case Qt::Key::Key_R:
+	}
+	if (GetAsyncKeyState('R')) {
 		camera.moveUp();
-		break;
-	case Qt::Key::Key_F:
+	}
+	if (GetAsyncKeyState('F')) {
 		camera.moveDown();
-		break;
-	case Qt::Key::Key_Escape:
+	}
+	if (GetAsyncKeyState(VK_ESCAPE)) {
 		exit(0);
-	default:
-		break;
 	}
 }
