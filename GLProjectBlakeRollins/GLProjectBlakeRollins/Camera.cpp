@@ -18,10 +18,10 @@ void Camera::mouseUpdate(const glm::vec2& newMousePosition)
 		oldMousePosition = newMousePosition;
 		return;
 	}
-	glm::vec3 toRotateAround = glm::cross(viewDirection, UP);
+	vecRight = glm::cross(viewDirection, UP);
 	glm::mat4 rotator = 
 		glm::rotate(mouseDelta.x * ROTATIONAL_SPEED * invertView, UP) *
-		glm::rotate(mouseDelta.y * ROTATIONAL_SPEED * invertView, toRotateAround);
+		glm::rotate(mouseDelta.y * ROTATIONAL_SPEED * invertView, vecRight);
 	viewDirection = glm::mat3(rotator) * viewDirection;
 	oldMousePosition = newMousePosition;
 }
@@ -49,11 +49,9 @@ void Camera::moveDown()
 }
 void Camera::strafeLeft()
 {
-	glm::vec3 strafeDirection = glm::cross(viewDirection, UP);
-	position -= MOVEMENT_SPEED * strafeDirection;
+	position -= MOVEMENT_SPEED * vecRight;
 }
 void Camera::strafeRight()
 {
-	glm::vec3 strafeDirection = glm::cross(viewDirection, UP);
-	position += MOVEMENT_SPEED * strafeDirection;
+	position += MOVEMENT_SPEED * vecRight;
 }
