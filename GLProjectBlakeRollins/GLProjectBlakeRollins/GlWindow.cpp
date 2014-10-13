@@ -154,3 +154,32 @@ void GlWindow::mouseMoveEvent(QMouseEvent* e)
 	camera.mouseUpdate(glm::vec2(e->x(), e->y()));
 	repaint();
 }
+
+void GlWindow::keyPressEvent(QKeyEvent* e)
+{
+	switch (e->key())
+	{
+	case Qt::Key::Key_W:
+		camera.moveForward();
+		break;
+	case Qt::Key::Key_S:
+		camera.moveBackward();
+		break;
+	case Qt::Key::Key_A:
+		camera.strafeLeft();
+		break;
+	case Qt::Key::Key_D:
+		camera.strafeRight();
+		break;
+	case Qt::Key::Key_R:
+		camera.moveUp();
+		break;
+	case Qt::Key::Key_F:
+		camera.moveDown();
+		break;
+	case Qt::Key::Key_Escape:
+		exit(0);
+	default:
+		break;
+	}
+}
