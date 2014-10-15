@@ -15,17 +15,9 @@ const uint ARROW_INDEX = 0;
 const uint CUBE_INDEX = 1;
 const uint SPHERE_INDEX = 2;
 GLuint vertexArrayObjectIds[3];
-
-GLuint arrowNumIndices;
-GLuint cubeNumIndices;
-GLuint sphereNumIndices;
-
-GLuint arrowVertexByteOffset;
-GLuint arrowIndexByteOffset;
-GLuint cubeVertexByteOffset;
-GLuint cubeIndexByteOffset;
-GLuint sphereVertexByteOffset;
-GLuint sphereIndexByteOffset;
+GLuint numIndices[3];
+GLuint vertexByteOffset[3];
+GLuint indexByteOffset[3];
 
 
 bool GlWindow::checkShaderStatus(GLuint shaderID) 
@@ -123,27 +115,27 @@ void GlWindow::sendDataToHardware()
 		sphere.vertexBufferSize() + sphere.indexBufferSize()),
 		0, GL_STATIC_DRAW);
 	GLsizeiptr currentOffset = 0;
-	arrowVertexByteOffset = currentOffset;
+	vertexByteOffset[ARROW_INDEX] = currentOffset;
 	glBufferSubData(GL_ARRAY_BUFFER, currentOffset, arrow.vertexBufferSize(), arrow.verts);
 	currentOffset += arrow.vertexBufferSize();
-	arrowIndexByteOffset = currentOffset;
+	indexByteOffset[ARROW_INDEX] = currentOffset;
 	glBufferSubData(GL_ARRAY_BUFFER, currentOffset, arrow.indexBufferSize(), arrow.indices);
 	currentOffset += arrow.indexBufferSize();
-	cubeVertexByteOffset = currentOffset;
+	vertexByteOffset[CUBE_INDEX] = currentOffset;
 	glBufferSubData(GL_ARRAY_BUFFER, currentOffset, cube.vertexBufferSize(), cube.verts);
 	currentOffset += cube.vertexBufferSize();
-	cubeIndexByteOffset = currentOffset;
+	indexByteOffset[CUBE_INDEX] = currentOffset;
 	glBufferSubData(GL_ARRAY_BUFFER, currentOffset, cube.indexBufferSize(), cube.indices);
 	currentOffset += cube.indexBufferSize();
-	sphereVertexByteOffset = currentOffset;
+	vertexByteOffset[SPHERE_INDEX] = currentOffset;
 	glBufferSubData(GL_ARRAY_BUFFER, currentOffset, sphere.vertexBufferSize(), sphere.verts);
 	currentOffset += sphere.vertexBufferSize();
-	sphereIndexByteOffset = currentOffset;
+	indexByteOffset[SPHERE_INDEX] = currentOffset;
 	glBufferSubData(GL_ARRAY_BUFFER, currentOffset, sphere.indexBufferSize(), sphere.indices);
 
-	arrowNumIndices = arrow.numIndices;
-	cubeNumIndices = cube.numIndices;
-	sphereNumIndices = sphere.numIndices;
+	numIndices[ARROW_INDEX] = arrow.numIndices;
+	numIndices[CUBE_INDEX] = cube.numIndices;
+	numIndices[SPHERE_INDEX] = sphere.numIndices;
 
 	glGenVertexArrays(1, &vertexArrayObjectIds[ARROW_INDEX]);
 	glGenVertexArrays(1, &vertexArrayObjectIds[CUBE_INDEX]);
@@ -153,24 +145,24 @@ void GlWindow::sendDataToHardware()
 	glEnableVertexAttribArray(0); // v_position
 	glEnableVertexAttribArray(1); // v_color
 	glBindBuffer(GL_ARRAY_BUFFER, glBufferId);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(arrowVertexByteOffset + (0 * sizeof(GL_FLOAT))));
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(arrowVertexByteOffset + (3 * sizeof(GL_FLOAT))));
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(vertexByteOffset[ARROW_INDEX] + (0 * sizeof(GL_FLOAT))));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(vertexByteOffset[ARROW_INDEX] + (3 * sizeof(GL_FLOAT))));
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, glBufferId);
 
 	glBindVertexArray(vertexArrayObjectIds[CUBE_INDEX]);
 	glEnableVertexAttribArray(0); // v_position
 	glEnableVertexAttribArray(1); // v_color
 	glBindBuffer(GL_ARRAY_BUFFER, glBufferId);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(cubeVertexByteOffset + (0 * sizeof(GL_FLOAT))));
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(cubeVertexByteOffset + (3 * sizeof(GL_FLOAT))));
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(vertexByteOffset[CUBE_INDEX] + (0 * sizeof(GL_FLOAT))));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(vertexByteOffset[CUBE_INDEX] + (3 * sizeof(GL_FLOAT))));
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, glBufferId);
 
 	glBindVertexArray(vertexArrayObjectIds[SPHERE_INDEX]);
 	glEnableVertexAttribArray(0); // v_position
 	glEnableVertexAttribArray(1); // v_color
 	glBindBuffer(GL_ARRAY_BUFFER, glBufferId);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(sphereVertexByteOffset + (0 * sizeof(GL_FLOAT))));
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(sphereVertexByteOffset + (3 * sizeof(GL_FLOAT))));
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(vertexByteOffset[SPHERE_INDEX] + (0 * sizeof(GL_FLOAT))));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(vertexByteOffset[SPHERE_INDEX] + (3 * sizeof(GL_FLOAT))));
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, glBufferId);
 
 }
@@ -189,11 +181,11 @@ void GlWindow::paintGL()
 	glBindVertexArray(vertexArrayObjectIds[ARROW_INDEX]);
 	// arrow
 	glm::mat4 arrow1ModelToWorldMatrix =
-		glm::translate(glm::vec3(3.0f, 0.0f, -3.75f));// *
+		glm::translate(glm::vec3(1.5f, 0.0f, -3.75f));// *
 	//		glm::rotate(26.0f, glm::vec3(0.0f, 1.0f, 0.0f));
 	fullTransformMatrix = worldToProjectionMatrix * arrow1ModelToWorldMatrix;
 	glUniformMatrix4fv(fullTransformMatrixUniformLocation, 1, GL_FALSE, &fullTransformMatrix[0][0]);
-	glDrawElements(GL_TRIANGLES, arrowNumIndices, GL_UNSIGNED_SHORT, (void*)arrowIndexByteOffset);
+	glDrawElements(GL_TRIANGLES, numIndices[ARROW_INDEX], GL_UNSIGNED_SHORT, (void*)indexByteOffset[ARROW_INDEX]);
 
 
 	glBindVertexArray(vertexArrayObjectIds[CUBE_INDEX]);
@@ -203,7 +195,7 @@ void GlWindow::paintGL()
 	//		glm::rotate(26.0f, glm::vec3(0.0f, 1.0f, 0.0f));
 	fullTransformMatrix = worldToProjectionMatrix * cube1ModelToWorldMatrix;
 	glUniformMatrix4fv(fullTransformMatrixUniformLocation, 1, GL_FALSE, &fullTransformMatrix[0][0]);
-	glDrawElements(GL_TRIANGLES, cubeNumIndices, GL_UNSIGNED_SHORT, (void*)cubeIndexByteOffset);
+	glDrawElements(GL_TRIANGLES, numIndices[CUBE_INDEX], GL_UNSIGNED_SHORT, (void*)indexByteOffset[CUBE_INDEX]);
 
 
 	glBindVertexArray(vertexArrayObjectIds[SPHERE_INDEX]);
@@ -213,7 +205,7 @@ void GlWindow::paintGL()
 	//		glm::rotate(26.0f, glm::vec3(0.0f, 1.0f, 0.0f));
 	fullTransformMatrix = worldToProjectionMatrix * sphere1ModelToWorldMatrix;
 	glUniformMatrix4fv(fullTransformMatrixUniformLocation, 1, GL_FALSE, &fullTransformMatrix[0][0]);
-	glDrawElements(GL_TRIANGLES, sphereNumIndices, GL_UNSIGNED_SHORT, (void*)sphereIndexByteOffset);
+	glDrawElements(GL_TRIANGLES, numIndices[SPHERE_INDEX], GL_UNSIGNED_SHORT, (void*)indexByteOffset[SPHERE_INDEX]);
 
 }
 
