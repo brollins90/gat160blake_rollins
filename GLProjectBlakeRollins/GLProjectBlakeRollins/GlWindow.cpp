@@ -17,7 +17,9 @@ GLuint arrowVertexArrayObjectIds;
 GLuint cubeVertexArrayObjectIds;
 GLuint arrowNumIndices;
 GLuint cubeNumIndices;
+GLuint arrowVertexByteOffset;
 GLuint arrowIndexByteOffset;
+GLuint cubeVertexByteOffset;
 GLuint cubeIndexByteOffset;
 
 
@@ -114,11 +116,13 @@ void GlWindow::sendDataToHardware()
 		cube.vertexBufferSize() + cube.indexBufferSize()),
 		0, GL_STATIC_DRAW);
 	GLsizeiptr currentOffset = 0;
+	arrowVertexByteOffset = currentOffset;
 	glBufferSubData(GL_ARRAY_BUFFER, currentOffset, arrow.vertexBufferSize(), arrow.verts);
 	currentOffset += arrow.vertexBufferSize();
 	arrowIndexByteOffset = currentOffset;
 	glBufferSubData(GL_ARRAY_BUFFER, currentOffset, arrow.indexBufferSize(), arrow.indices);
 	currentOffset += arrow.indexBufferSize();
+	cubeVertexByteOffset = currentOffset;
 	glBufferSubData(GL_ARRAY_BUFFER, currentOffset, cube.vertexBufferSize(), cube.verts);
 	currentOffset += cube.vertexBufferSize();
 	cubeIndexByteOffset = currentOffset;
@@ -134,16 +138,16 @@ void GlWindow::sendDataToHardware()
 	glEnableVertexAttribArray(0); // v_position
 	glEnableVertexAttribArray(1); // v_color
 	glBindBuffer(GL_ARRAY_BUFFER, glBufferId);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, 0);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(3 * sizeof(GL_FLOAT)));
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(arrowVertexByteOffset + (0 * sizeof(GL_FLOAT))));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(arrowVertexByteOffset + (3 * sizeof(GL_FLOAT))));
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, glBufferId);
 
 	glBindVertexArray(cubeVertexArrayObjectIds);
 	glEnableVertexAttribArray(0); // v_position
 	glEnableVertexAttribArray(1); // v_color
 	glBindBuffer(GL_ARRAY_BUFFER, glBufferId);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, 0);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(3 * sizeof(GL_FLOAT)));
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(cubeVertexByteOffset + (0 * sizeof(GL_FLOAT))));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(cubeVertexByteOffset + (3 * sizeof(GL_FLOAT))));
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, glBufferId);
 
 }
