@@ -15,7 +15,8 @@ const uint ARROW_INDEX = 0;
 const uint CUBE_INDEX = 1;
 GLuint vertexArrayObjectIds;
 GLuint numIndices;
-GLuint indexByteOffset;
+GLuint arrowIndexByteOffset;
+GLuint cubeIndexByteOffset;
 
 
 bool GlWindow::checkShaderStatus(GLuint shaderID) 
@@ -101,17 +102,25 @@ void GlWindow::initializeGL()
 void GlWindow::sendDataToHardware()
 {
 	Neumont::ShapeData arrow = Neumont::ShapeGenerator::makeArrow();
+	Neumont::ShapeData cube = Neumont::ShapeGenerator::makeCube();
+
 
 	glGenBuffers(1, &glBufferId);
 	glBindBuffer(GL_ARRAY_BUFFER, glBufferId);
 	glBufferData(GL_ARRAY_BUFFER,
-		(arrow.vertexBufferSize() + arrow.indexBufferSize()),
+		(arrow.vertexBufferSize() + arrow.indexBufferSize() +
+		cube.vertexBufferSize() + cube.indexBufferSize()),
 		0, GL_STATIC_DRAW);
 	GLsizeiptr currentOffset = 0;
 	glBufferSubData(GL_ARRAY_BUFFER, currentOffset, arrow.vertexBufferSize(), arrow.verts);
 	currentOffset += arrow.vertexBufferSize();
-	indexByteOffset = arrow.vertexBufferSize();
+	arrowIndexByteOffset = currentOffset;
 	glBufferSubData(GL_ARRAY_BUFFER, currentOffset, arrow.indexBufferSize(), arrow.indices);
+	currentOffset += arrow.indexBufferSize();
+	glBufferSubData(GL_ARRAY_BUFFER, currentOffset, cube.vertexBufferSize(), cube.verts);
+	currentOffset += cube.vertexBufferSize();
+	cubeIndexByteOffset = currentOffset;
+	glBufferSubData(GL_ARRAY_BUFFER, currentOffset, cube.indexBufferSize(), cube.indices);
 	
 	numIndices = arrow.numIndices;
 
@@ -143,7 +152,7 @@ void GlWindow::paintGL()
 //		glm::rotate(26.0f, glm::vec3(0.0f, 1.0f, 0.0f));
 	fullTransformMatrix = worldToProjectionMatrix * arrow1ModelToWorldMatrix;
 	glUniformMatrix4fv(fullTransformMatrixUniformLocation, 1, GL_FALSE, &fullTransformMatrix[0][0]);
-	glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_SHORT, (void*)indexByteOffset);
+	glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_SHORT, (void*)arrowIndexByteOffset);
 	
 }
 
