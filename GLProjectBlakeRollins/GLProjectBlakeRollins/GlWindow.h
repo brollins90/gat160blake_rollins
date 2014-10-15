@@ -32,7 +32,6 @@ private:
 	void compileShaders();
 	void hillMath();
 	void sendDataToHardware();
-	void setupVertexArrays();
 private slots:
 	void windowUpdate();
 protected:
