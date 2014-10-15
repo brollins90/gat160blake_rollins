@@ -13,13 +13,19 @@ GLint fullTransformMatrixUniformLocation;
 
 const uint ARROW_INDEX = 0;
 const uint CUBE_INDEX = 1;
-GLuint vertexArrayObjectIds[2];
+const uint PLANE_INDEX = 2;
+GLuint vertexArrayObjectIds[3];
+
 GLuint arrowNumIndices;
 GLuint cubeNumIndices;
+GLuint planeNumIndices;
+
 GLuint arrowVertexByteOffset;
 GLuint arrowIndexByteOffset;
 GLuint cubeVertexByteOffset;
 GLuint cubeIndexByteOffset;
+GLuint planeVertexByteOffset;
+GLuint planeIndexByteOffset;
 
 
 bool GlWindow::checkShaderStatus(GLuint shaderID) 
@@ -106,13 +112,15 @@ void GlWindow::sendDataToHardware()
 {
 	Neumont::ShapeData arrow = Neumont::ShapeGenerator::makeArrow();
 	Neumont::ShapeData cube = Neumont::ShapeGenerator::makeCube();
+	Neumont::ShapeData plane = Neumont::ShapeGenerator::makePlane(10);
 
 
 	glGenBuffers(1, &glBufferId);
 	glBindBuffer(GL_ARRAY_BUFFER, glBufferId);
 	glBufferData(GL_ARRAY_BUFFER,
 		(arrow.vertexBufferSize() + arrow.indexBufferSize() +
-		cube.vertexBufferSize() + cube.indexBufferSize()),
+		cube.vertexBufferSize() + cube.indexBufferSize() +
+		plane.vertexBufferSize() + plane.indexBufferSize()),
 		0, GL_STATIC_DRAW);
 	GLsizeiptr currentOffset = 0;
 	arrowVertexByteOffset = currentOffset;
@@ -126,12 +134,20 @@ void GlWindow::sendDataToHardware()
 	currentOffset += cube.vertexBufferSize();
 	cubeIndexByteOffset = currentOffset;
 	glBufferSubData(GL_ARRAY_BUFFER, currentOffset, cube.indexBufferSize(), cube.indices);
+	currentOffset += cube.indexBufferSize();
+	planeVertexByteOffset = currentOffset;
+	glBufferSubData(GL_ARRAY_BUFFER, currentOffset, plane.vertexBufferSize(), plane.verts);
+	currentOffset += plane.vertexBufferSize();
+	planeIndexByteOffset = currentOffset;
+	glBufferSubData(GL_ARRAY_BUFFER, currentOffset, plane.indexBufferSize(), plane.indices);
 
 	arrowNumIndices = arrow.numIndices;
 	cubeNumIndices = cube.numIndices;
+	planeNumIndices = plane.numIndices;
 
 	glGenVertexArrays(1, &vertexArrayObjectIds[ARROW_INDEX]);
 	glGenVertexArrays(1, &vertexArrayObjectIds[CUBE_INDEX]);
+	glGenVertexArrays(1, &vertexArrayObjectIds[PLANE_INDEX]);
 
 	glBindVertexArray(vertexArrayObjectIds[ARROW_INDEX]);
 	glEnableVertexAttribArray(0); // v_position
@@ -147,6 +163,14 @@ void GlWindow::sendDataToHardware()
 	glBindBuffer(GL_ARRAY_BUFFER, glBufferId);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(cubeVertexByteOffset + (0 * sizeof(GL_FLOAT))));
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(cubeVertexByteOffset + (3 * sizeof(GL_FLOAT))));
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, glBufferId);
+
+	glBindVertexArray(vertexArrayObjectIds[PLANE_INDEX]);
+	glEnableVertexAttribArray(0); // v_position
+	glEnableVertexAttribArray(1); // v_color
+	glBindBuffer(GL_ARRAY_BUFFER, glBufferId);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(planeVertexByteOffset + (0 * sizeof(GL_FLOAT))));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(planeVertexByteOffset + (3 * sizeof(GL_FLOAT))));
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, glBufferId);
 
 }
