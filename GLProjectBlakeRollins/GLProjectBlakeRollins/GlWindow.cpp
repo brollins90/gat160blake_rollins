@@ -2,8 +2,6 @@
 #include <ShapeGenerator.h>
 #include <ShapeData.h>
 
-Camera camera;
-
 const uint NUM_VERTICES_PER_TRI = 3;
 const uint NUM_FLOATS_PER_VERTICE = sizeof(Neumont::Vertex) / sizeof(float);
 const uint VERTEX_BYTE_SIZE = NUM_FLOATS_PER_VERTICE * sizeof(float);
@@ -174,7 +172,7 @@ void GlWindow::paintGL()
 
 	glm::mat4 fullTransformMatrix;
 	glm::mat4 viewToProjectionMatrix = glm::perspective(60.0f, ((float)width() / height()), 0.1f, 100.0f);
-	glm::mat4 worldToViewMatrix = camera.getWorldToViewMatrix();
+	glm::mat4 worldToViewMatrix = glm::mat4(); //camera.getWorldToViewMatrix();
 	glm::mat4 worldToProjectionMatrix = viewToProjectionMatrix * worldToViewMatrix;
 
 
@@ -220,32 +218,8 @@ GlWindow::~GlWindow()
 	glDeleteProgram(programID);
 }
 
-void GlWindow::mouseMoveEvent(QMouseEvent* e)
-{
-	camera.mouseUpdate(glm::vec2(e->x(), e->y()));
-	repaint();
-}
-
 void GlWindow::checkKeyState()
 {
-	if (GetAsyncKeyState('W')) {
-		camera.moveForward();
-	}
-	if (GetAsyncKeyState('S')) {
-		camera.moveBackward();
-	}
-	if (GetAsyncKeyState('A')) {
-		camera.strafeLeft();
-	}
-	if (GetAsyncKeyState('D')) {
-		camera.strafeRight();
-	}
-	if (GetAsyncKeyState('R')) {
-		camera.moveUp();
-	}
-	if (GetAsyncKeyState('F')) {
-		camera.moveDown();
-	}
 	if (GetAsyncKeyState(VK_ESCAPE)) {
 		exit(0);
 	}
