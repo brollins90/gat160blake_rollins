@@ -13,8 +13,7 @@ GLint fullTransformMatrixUniformLocation;
 
 const uint ARROW_INDEX = 0;
 const uint CUBE_INDEX = 1;
-GLuint arrowVertexArrayObjectIds;
-GLuint cubeVertexArrayObjectIds;
+GLuint vertexArrayObjectIds[2];
 GLuint arrowNumIndices;
 GLuint cubeNumIndices;
 GLuint arrowVertexByteOffset;
@@ -131,10 +130,10 @@ void GlWindow::sendDataToHardware()
 	arrowNumIndices = arrow.numIndices;
 	cubeNumIndices = cube.numIndices;
 
-	glGenVertexArrays(1, &arrowVertexArrayObjectIds);
-	glGenVertexArrays(1, &cubeVertexArrayObjectIds);
+	glGenVertexArrays(1, &vertexArrayObjectIds[ARROW_INDEX]);
+	glGenVertexArrays(1, &vertexArrayObjectIds[CUBE_INDEX]);
 
-	glBindVertexArray(arrowVertexArrayObjectIds);
+	glBindVertexArray(vertexArrayObjectIds[ARROW_INDEX]);
 	glEnableVertexAttribArray(0); // v_position
 	glEnableVertexAttribArray(1); // v_color
 	glBindBuffer(GL_ARRAY_BUFFER, glBufferId);
@@ -142,7 +141,7 @@ void GlWindow::sendDataToHardware()
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(arrowVertexByteOffset + (3 * sizeof(GL_FLOAT))));
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, glBufferId);
 
-	glBindVertexArray(cubeVertexArrayObjectIds);
+	glBindVertexArray(vertexArrayObjectIds[CUBE_INDEX]);
 	glEnableVertexAttribArray(0); // v_position
 	glEnableVertexAttribArray(1); // v_color
 	glBindBuffer(GL_ARRAY_BUFFER, glBufferId);
@@ -163,7 +162,7 @@ void GlWindow::paintGL()
 	glm::mat4 worldToProjectionMatrix = viewToProjectionMatrix * worldToViewMatrix;
 
 
-	glBindVertexArray(arrowVertexArrayObjectIds);
+	glBindVertexArray(vertexArrayObjectIds[ARROW_INDEX]);
 	// arrow
 	glm::mat4 arrow1ModelToWorldMatrix =
 		glm::translate(glm::vec3(3.0f, 0.0f, -3.75f));// *
@@ -173,7 +172,7 @@ void GlWindow::paintGL()
 	glDrawElements(GL_TRIANGLES, arrowNumIndices, GL_UNSIGNED_SHORT, (void*)arrowIndexByteOffset);
 
 
-	glBindVertexArray(cubeVertexArrayObjectIds);
+	glBindVertexArray(vertexArrayObjectIds[CUBE_INDEX]);
 	// cube
 	glm::mat4 cube1ModelToWorldMatrix =
 		glm::translate(glm::vec3(-3.0f, 0.0f, -3.75f));// *
