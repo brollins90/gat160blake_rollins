@@ -1,6 +1,4 @@
 #include "GlWindow.h"
-#include <ShapeGenerator.h>
-#include <ShapeData.h>
 
 const uint NUM_VERTICES_PER_TRI = 3;
 const uint NUM_FLOATS_PER_VERTICE = sizeof(Neumont::Vertex) / sizeof(float);

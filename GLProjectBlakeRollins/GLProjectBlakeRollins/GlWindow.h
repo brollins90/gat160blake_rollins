@@ -8,6 +8,8 @@
 #include <Qt\qdebug.h>
 #include <Qt\qtimer.h>
 #include <QtGui\QKeyEvent>
+#include <ShapeGenerator.h>
+#include <ShapeData.h>
 #include "Camera.h"
 
 class GlWindow : public QGLWidget

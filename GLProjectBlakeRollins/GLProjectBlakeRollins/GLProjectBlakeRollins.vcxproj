@@ -87,15 +87,19 @@ xcopy /y /d "$(MiddlewareDir)NeumontTools\bin\*.dll" "$(OutDir)"</Command>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="DebugSlider.cpp" />
+    <ClCompile Include="DebugSlider_moc.cpp" />
     <ClCompile Include="GlWindow.cpp" />
-    <ClCompile Include="GlWindow._moc.cpp" />
+    <ClCompile Include="GlWindow_moc.cpp" />
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="DebugSlider.h" />
     <ClInclude Include="GlWindow.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="common.props" />
     <None Include="Shaders\FragmentShaderCode.glsl">
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </DeploymentContent>
