@@ -165,6 +165,43 @@ void GlWindow::sendDataToHardware()
 
 }
 
+void GlWindow::windowUpdate()
+{
+	checkKeyState();
+	repaint();
+}
+
+void GlWindow::checkKeyState()
+{
+	if (GetAsyncKeyState('W')) {
+		camera.moveForward();
+	}
+	if (GetAsyncKeyState('S')) {
+		camera.moveBackward();
+	}
+	if (GetAsyncKeyState('A')) {
+		camera.moveLeft();
+	}
+	if (GetAsyncKeyState('D')) {
+		camera.moveRight();
+	}
+	if (GetAsyncKeyState('R')) {
+		camera.moveUp();
+	}
+	if (GetAsyncKeyState('F')) {
+		camera.moveDown();
+	}
+	if (GetAsyncKeyState(VK_ESCAPE)) {
+		exit(0);
+	}
+}
+
+void GlWindow::mouseMoveEvent(QMouseEvent* ev)
+{
+	camera.mouseUpdate(glm::vec2(ev->x(), ev->y()));
+	repaint();
+}
+
 void GlWindow::paintGL()
 {
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
@@ -172,43 +209,33 @@ void GlWindow::paintGL()
 
 	glm::mat4 fullTransformMatrix;
 	glm::mat4 viewToProjectionMatrix = glm::perspective(60.0f, ((float)width() / height()), 0.1f, 100.0f);
-	glm::mat4 worldToViewMatrix = glm::mat4(); //camera.getWorldToViewMatrix();
+	glm::mat4 worldToViewMatrix = camera.getWorldToViewMatrix();
 	glm::mat4 worldToProjectionMatrix = viewToProjectionMatrix * worldToViewMatrix;
 
 
-	glBindVertexArray(vertexArrayObjectIds[ARROW_INDEX]);
 	// arrow
-	fullTransformMatrix = worldToProjectionMatrix * 
+	glBindVertexArray(vertexArrayObjectIds[ARROW_INDEX]);
+	fullTransformMatrix = worldToProjectionMatrix *
 		glm::translate(glm::vec3(1.5f, 0.0f, -3.75f)) *
 		glm::rotate(26.0f, glm::vec3(0.0f, 1.0f, 0.0f));
 	glUniformMatrix4fv(fullTransformMatrixUniformLocation, 1, GL_FALSE, &fullTransformMatrix[0][0]);
 	glDrawElements(GL_TRIANGLES, numIndices[ARROW_INDEX], GL_UNSIGNED_SHORT, (void*)indexByteOffset[ARROW_INDEX]);
 
-
-	glBindVertexArray(vertexArrayObjectIds[CUBE_INDEX]);
 	// cube
+	glBindVertexArray(vertexArrayObjectIds[CUBE_INDEX]);
 	fullTransformMatrix = worldToProjectionMatrix *
 		glm::translate(glm::vec3(-3.0f, 0.0f, -3.75f)) *
 		glm::rotate(26.0f, glm::vec3(0.0f, 1.0f, 0.0f));
 	glUniformMatrix4fv(fullTransformMatrixUniformLocation, 1, GL_FALSE, &fullTransformMatrix[0][0]);
 	glDrawElements(GL_TRIANGLES, numIndices[CUBE_INDEX], GL_UNSIGNED_SHORT, (void*)indexByteOffset[CUBE_INDEX]);
 
-
-	glBindVertexArray(vertexArrayObjectIds[SPHERE_INDEX]);
 	// sphere
+	glBindVertexArray(vertexArrayObjectIds[SPHERE_INDEX]);
 	fullTransformMatrix = worldToProjectionMatrix *
 		glm::translate(glm::vec3(-1.0f, 0.0f, -2.25f)) *
 		glm::rotate(26.0f, glm::vec3(0.0f, 1.0f, 0.0f));
 	glUniformMatrix4fv(fullTransformMatrixUniformLocation, 1, GL_FALSE, &fullTransformMatrix[0][0]);
 	glDrawElements(GL_TRIANGLES, numIndices[SPHERE_INDEX], GL_UNSIGNED_SHORT, (void*)indexByteOffset[SPHERE_INDEX]);
-
-}
-
-// Timer callback
-void GlWindow::windowUpdate()
-{
-	checkKeyState();
-	repaint();
 }
 
 GlWindow::~GlWindow()
@@ -216,11 +243,4 @@ GlWindow::~GlWindow()
 	glDeleteBuffers(1, &glBufferId);
 	glUseProgram(0);
 	glDeleteProgram(programID);
-}
-
-void GlWindow::checkKeyState()
-{
-	if (GetAsyncKeyState(VK_ESCAPE)) {
-		exit(0);
-	}
 }

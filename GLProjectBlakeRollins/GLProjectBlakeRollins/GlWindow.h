@@ -1,35 +1,33 @@
 #pragma once
 #include <GL\glew.h>
 #include <QtOpenGl\qglwidget>
+#include <glm\glm.hpp>
+#include <glm\gtx\transform.hpp>
 #include <iostream>
 #include <fstream>
-#include <glm\gtx\transform.hpp>
-#include <Qt\qtimer.h>
-#include <glm\glm.hpp>
 #include <Qt\qdebug.h>
+#include <Qt\qtimer.h>
 #include <QtGui\QKeyEvent>
+#include "Camera.h"
 
 class GlWindow : public QGLWidget
 {
 private:
 	Q_OBJECT
-
-	GLuint vertexBufferID;
-	GLuint indexBufferID;
 	GLuint programID;
 	QTimer windowTimer;
+	Camera camera;
 
-	float distFromTriangle(glm::vec3 pos);
-	void checkKeyState();
-	bool checkShaderStatus(GLuint shaderID);
 	void createProgram();
+	bool checkShaderStatus(GLuint shaderID);
 	void compileShaders();
-	void hillMath();
 	void sendDataToHardware();
 private slots:
 	void windowUpdate();
 protected:
 	void initializeGL();
+	void checkKeyState();
+	void mouseMoveEvent(QMouseEvent* ev);
 	void paintGL();
 public:
 	~GlWindow();
