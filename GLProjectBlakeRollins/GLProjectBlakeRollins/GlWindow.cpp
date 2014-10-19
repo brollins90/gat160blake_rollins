@@ -4,11 +4,13 @@ const uint NUM_VERTICES_PER_TRI = 3;
 const uint NUM_FLOATS_PER_VERTICE = sizeof(Neumont::Vertex) / sizeof(float);
 const uint VERTEX_BYTE_SIZE = NUM_FLOATS_PER_VERTICE * sizeof(float);
 
-glm::vec3 ambientLight(0.4f, 0.4f, 0.4f);
+glm::vec3 ambientLight(0.3f, 0.3f, 0.3f);
+glm::vec3 lightPosition(2.0f, 5.0f, -2.0f);
 
 GLuint glBufferId;
 GLint fullTransformMatrixUniformLocation;
 GLint ambientLightUniformLocation;
+GLint lightPositionUniformLocation;
 
 const uint ARROW_INDEX = 0;
 const uint CUBE_INDEX = 1;
@@ -98,6 +100,7 @@ void GlWindow::initializeGL()
 	compileShaders();
 
 	ambientLightUniformLocation = glGetUniformLocation(programID, "ambientLight");
+	lightPositionUniformLocation = glGetUniformLocation(programID, "lightPosition");
 	fullTransformMatrixUniformLocation = glGetUniformLocation(programID, "fullTransformMatrix");
 }
 
@@ -158,8 +161,8 @@ void GlWindow::sendDataToHardware()
 	glEnableVertexAttribArray(2); // v_normal
 	glBindBuffer(GL_ARRAY_BUFFER, glBufferId);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(vertexByteOffset[ARROW_INDEX] + (0 * sizeof(GL_FLOAT))));
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(vertexByteOffset[ARROW_INDEX] + (3 * sizeof(GL_FLOAT))));
-	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(vertexByteOffset[ARROW_INDEX] + (6 * sizeof(GL_FLOAT))));
+	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(vertexByteOffset[ARROW_INDEX] + (3 * sizeof(GL_FLOAT))));
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(vertexByteOffset[ARROW_INDEX] + (7 * sizeof(GL_FLOAT))));
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, glBufferId);
 
 	glBindVertexArray(vertexArrayObjectIds[CUBE_INDEX]);
@@ -168,8 +171,8 @@ void GlWindow::sendDataToHardware()
 	glEnableVertexAttribArray(2); // v_normal
 	glBindBuffer(GL_ARRAY_BUFFER, glBufferId);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(vertexByteOffset[CUBE_INDEX] + (0 * sizeof(GL_FLOAT))));
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(vertexByteOffset[CUBE_INDEX] + (3 * sizeof(GL_FLOAT))));
-	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(vertexByteOffset[CUBE_INDEX] + (6 * sizeof(GL_FLOAT))));
+	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(vertexByteOffset[CUBE_INDEX] + (3 * sizeof(GL_FLOAT))));
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(vertexByteOffset[CUBE_INDEX] + (7 * sizeof(GL_FLOAT))));
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, glBufferId);
 
 	glBindVertexArray(vertexArrayObjectIds[SPHERE_INDEX]);
@@ -178,8 +181,8 @@ void GlWindow::sendDataToHardware()
 	glEnableVertexAttribArray(2); // v_normal
 	glBindBuffer(GL_ARRAY_BUFFER, glBufferId);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(vertexByteOffset[SPHERE_INDEX] + (0 * sizeof(GL_FLOAT))));
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(vertexByteOffset[SPHERE_INDEX] + (3 * sizeof(GL_FLOAT))));
-	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(vertexByteOffset[SPHERE_INDEX] + (6 * sizeof(GL_FLOAT))));
+	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(vertexByteOffset[SPHERE_INDEX] + (3 * sizeof(GL_FLOAT))));
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(vertexByteOffset[SPHERE_INDEX] + (7 * sizeof(GL_FLOAT))));
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, glBufferId);
 
 	glBindVertexArray(vertexArrayObjectIds[PLANE_INDEX]);
@@ -188,14 +191,16 @@ void GlWindow::sendDataToHardware()
 	glEnableVertexAttribArray(2); // v_normal
 	glBindBuffer(GL_ARRAY_BUFFER, glBufferId);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(vertexByteOffset[PLANE_INDEX] + (0 * sizeof(GL_FLOAT))));
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(vertexByteOffset[PLANE_INDEX] + (3 * sizeof(GL_FLOAT))));
-	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(vertexByteOffset[PLANE_INDEX] + (6 * sizeof(GL_FLOAT))));
+	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(vertexByteOffset[PLANE_INDEX] + (3 * sizeof(GL_FLOAT))));
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(vertexByteOffset[PLANE_INDEX] + (7 * sizeof(GL_FLOAT))));
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, glBufferId);
 
 }
 
 void GlWindow::windowUpdate()
 {
+	//lightPosition.x += 0.1f;
+	//qDebug() << lightPosition.x;
 	checkKeyState();
 	repaint();
 }
@@ -237,6 +242,8 @@ void GlWindow::paintGL()
 	glViewport(0, 0, width(), height());
 
 	glUniform3fv(ambientLightUniformLocation, 1, &ambientLight[0]);
+	glUniform3fv(lightPositionUniformLocation, 1, &lightPosition[0]);
+	
 
 	glm::mat4 fullTransformMatrix;
 	glm::mat4 viewToProjectionMatrix = glm::perspective(60.0f, ((float)width() / height()), 0.1f, 20.0f);
@@ -263,16 +270,15 @@ void GlWindow::paintGL()
 	// sphere
 	glBindVertexArray(vertexArrayObjectIds[SPHERE_INDEX]);
 	fullTransformMatrix = worldToProjectionMatrix *
-		glm::translate(glm::vec3(-1.0f, 0.0f, -2.25f)) *
-		glm::rotate(26.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+		glm::translate(glm::vec3(0.0f, 1.0f, 0.0f)) *
+		glm::rotate(0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
 	glUniformMatrix4fv(fullTransformMatrixUniformLocation, 1, GL_FALSE, &fullTransformMatrix[0][0]);
 	glDrawElements(GL_TRIANGLES, numIndices[SPHERE_INDEX], GL_UNSIGNED_SHORT, (void*)indexByteOffset[SPHERE_INDEX]);
 
 	// plane
 	glBindVertexArray(vertexArrayObjectIds[PLANE_INDEX]);
 	fullTransformMatrix = worldToProjectionMatrix *
-		glm::translate(glm::vec3(-4.0f, 0.0f, -2.25f)) *
-		glm::rotate(26.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+		glm::mat4();
 	glUniformMatrix4fv(fullTransformMatrixUniformLocation, 1, GL_FALSE, &fullTransformMatrix[0][0]);
 	glDrawElements(GL_TRIANGLES, numIndices[PLANE_INDEX], GL_UNSIGNED_SHORT, (void*)indexByteOffset[PLANE_INDEX]);
 }
