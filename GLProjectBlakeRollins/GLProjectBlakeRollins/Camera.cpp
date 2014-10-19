@@ -5,7 +5,7 @@ const float ROTATION_SPEED = 0.5f;
 const float MAX_MOVEMENT = 20.0f;
 
 Camera::Camera()
-	: position(glm::vec3(0, 0, 0)),
+	: position(glm::vec3(0, 1, 7)),
 	direction(glm::vec3(0, 0, -1)),
 	UP(glm::vec3(0,1,0))
 {

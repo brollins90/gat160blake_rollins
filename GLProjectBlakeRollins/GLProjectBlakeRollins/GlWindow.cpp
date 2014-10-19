@@ -4,8 +4,11 @@ const uint NUM_VERTICES_PER_TRI = 3;
 const uint NUM_FLOATS_PER_VERTICE = sizeof(Neumont::Vertex) / sizeof(float);
 const uint VERTEX_BYTE_SIZE = NUM_FLOATS_PER_VERTICE * sizeof(float);
 
+glm::vec3 ambientLight(0.4f, 0.4f, 0.4f);
+
 GLuint glBufferId;
 GLint fullTransformMatrixUniformLocation;
+GLint ambientLightUniformLocation;
 
 const uint ARROW_INDEX = 0;
 const uint CUBE_INDEX = 1;
@@ -93,6 +96,7 @@ void GlWindow::initializeGL()
 	sendDataToHardware();
 	compileShaders();
 
+	ambientLightUniformLocation = glGetUniformLocation(programID, "ambientLight");
 	fullTransformMatrixUniformLocation = glGetUniformLocation(programID, "fullTransformMatrix");
 }
 
@@ -211,29 +215,30 @@ void GlWindow::paintGL()
 	glm::mat4 worldToProjectionMatrix = viewToProjectionMatrix * worldToViewMatrix;
 
 
-	// arrow
-	glBindVertexArray(vertexArrayObjectIds[ARROW_INDEX]);
-	fullTransformMatrix = worldToProjectionMatrix *
-		glm::translate(glm::vec3(1.5f, 0.0f, -3.75f)) *
-		glm::rotate(26.0f, glm::vec3(0.0f, 1.0f, 0.0f));
-	glUniformMatrix4fv(fullTransformMatrixUniformLocation, 1, GL_FALSE, &fullTransformMatrix[0][0]);
-	glDrawElements(GL_TRIANGLES, numIndices[ARROW_INDEX], GL_UNSIGNED_SHORT, (void*)indexByteOffset[ARROW_INDEX]);
+	//// arrow
+	//glBindVertexArray(vertexArrayObjectIds[ARROW_INDEX]);
+	//fullTransformMatrix = worldToProjectionMatrix *
+	//	glm::translate(glm::vec3(1.5f, 0.0f, -3.75f)) *
+	//	glm::rotate(26.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+	//glUniformMatrix4fv(fullTransformMatrixUniformLocation, 1, GL_FALSE, &fullTransformMatrix[0][0]);
+	//glDrawElements(GL_TRIANGLES, numIndices[ARROW_INDEX], GL_UNSIGNED_SHORT, (void*)indexByteOffset[ARROW_INDEX]);
 
 	// cube
 	glBindVertexArray(vertexArrayObjectIds[CUBE_INDEX]);
 	fullTransformMatrix = worldToProjectionMatrix *
-		glm::translate(glm::vec3(-3.0f, 0.0f, -3.75f)) *
-		glm::rotate(26.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+		glm::translate(glm::vec3(0.0f, 0.0f, 0.0f)) *
+		glm::rotate(26.0f, glm::vec3(0.0f, 0.24f, 0.0f));
 	glUniformMatrix4fv(fullTransformMatrixUniformLocation, 1, GL_FALSE, &fullTransformMatrix[0][0]);
+	glUniform3fv(ambientLightUniformLocation, 1, &ambientLight[0]);
 	glDrawElements(GL_TRIANGLES, numIndices[CUBE_INDEX], GL_UNSIGNED_SHORT, (void*)indexByteOffset[CUBE_INDEX]);
 
-	// sphere
-	glBindVertexArray(vertexArrayObjectIds[SPHERE_INDEX]);
-	fullTransformMatrix = worldToProjectionMatrix *
-		glm::translate(glm::vec3(-1.0f, 0.0f, -2.25f)) *
-		glm::rotate(26.0f, glm::vec3(0.0f, 1.0f, 0.0f));
-	glUniformMatrix4fv(fullTransformMatrixUniformLocation, 1, GL_FALSE, &fullTransformMatrix[0][0]);
-	glDrawElements(GL_TRIANGLES, numIndices[SPHERE_INDEX], GL_UNSIGNED_SHORT, (void*)indexByteOffset[SPHERE_INDEX]);
+	//// sphere
+	//glBindVertexArray(vertexArrayObjectIds[SPHERE_INDEX]);
+	//fullTransformMatrix = worldToProjectionMatrix *
+	//	glm::translate(glm::vec3(-1.0f, 0.0f, -2.25f)) *
+	//	glm::rotate(26.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+	//glUniformMatrix4fv(fullTransformMatrixUniformLocation, 1, GL_FALSE, &fullTransformMatrix[0][0]);
+	//glDrawElements(GL_TRIANGLES, numIndices[SPHERE_INDEX], GL_UNSIGNED_SHORT, (void*)indexByteOffset[SPHERE_INDEX]);
 }
 
 GlWindow::~GlWindow()
