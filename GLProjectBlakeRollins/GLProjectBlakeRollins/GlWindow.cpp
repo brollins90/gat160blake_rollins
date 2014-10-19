@@ -11,6 +11,7 @@ GLuint glBufferId;
 GLint fullTransformMatrixUniformLocation;
 GLint ambientLightUniformLocation;
 GLint lightPositionUniformLocation;
+GLint modelToWorldTransformMatrixUniformLocation;
 
 const uint ARROW_INDEX = 0;
 const uint CUBE_INDEX = 1;
@@ -102,6 +103,7 @@ void GlWindow::initializeGL()
 	ambientLightUniformLocation = glGetUniformLocation(programID, "ambientLight");
 	lightPositionUniformLocation = glGetUniformLocation(programID, "lightPosition");
 	fullTransformMatrixUniformLocation = glGetUniformLocation(programID, "fullTransformMatrix");
+	modelToWorldTransformMatrixUniformLocation = glGetUniformLocation(programID, "modelToWorldTransformMatrix");
 }
 
 void GlWindow::sendDataToHardware()
@@ -246,40 +248,48 @@ void GlWindow::paintGL()
 	
 
 	glm::mat4 fullTransformMatrix;
+	glm::mat4 modelToWorldTransformMatrix;
 	glm::mat4 viewToProjectionMatrix = glm::perspective(60.0f, ((float)width() / height()), 0.1f, 20.0f);
 	glm::mat4 worldToViewMatrix = camera.getWorldToViewMatrix();
 	glm::mat4 worldToProjectionMatrix = viewToProjectionMatrix * worldToViewMatrix;
 
 
-	// arrow
-	glBindVertexArray(vertexArrayObjectIds[ARROW_INDEX]);
-	fullTransformMatrix = worldToProjectionMatrix *
-		glm::translate(glm::vec3(1.5f, 0.0f, -3.75f)) *
-		glm::rotate(26.0f, glm::vec3(0.0f, 1.0f, 0.0f));
-	glUniformMatrix4fv(fullTransformMatrixUniformLocation, 1, GL_FALSE, &fullTransformMatrix[0][0]);
-	glDrawElements(GL_TRIANGLES, numIndices[ARROW_INDEX], GL_UNSIGNED_SHORT, (void*)indexByteOffset[ARROW_INDEX]);
+	//// arrow
+	//glBindVertexArray(vertexArrayObjectIds[ARROW_INDEX]);
+	//fullTransformMatrix = worldToProjectionMatrix *
+	//	glm::mat4();
+	//	//glm::translate(glm::vec3(1.5f, 0.0f, -3.75f)) *
+	//	//glm::rotate(26.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+	//glUniformMatrix4fv(fullTransformMatrixUniformLocation, 1, GL_FALSE, &fullTransformMatrix[0][0]);
+	//glDrawElements(GL_TRIANGLES, numIndices[ARROW_INDEX], GL_UNSIGNED_SHORT, (void*)indexByteOffset[ARROW_INDEX]);
 
-	// cube
-	glBindVertexArray(vertexArrayObjectIds[CUBE_INDEX]);
-	fullTransformMatrix = worldToProjectionMatrix *
-		glm::translate(glm::vec3(0.0f, 0.0f, 0.0f)) *
-		glm::rotate(26.0f, glm::vec3(0.0f, 0.24f, 0.0f));
-	glUniformMatrix4fv(fullTransformMatrixUniformLocation, 1, GL_FALSE, &fullTransformMatrix[0][0]);
-	glDrawElements(GL_TRIANGLES, numIndices[CUBE_INDEX], GL_UNSIGNED_SHORT, (void*)indexByteOffset[CUBE_INDEX]);
+	//// cube
+	//glBindVertexArray(vertexArrayObjectIds[CUBE_INDEX]);
+	//fullTransformMatrix = worldToProjectionMatrix *
+	//	glm::mat4();
+	//	//glm::translate(glm::vec3(0.0f, 0.0f, 0.0f)) *
+	//	//glm::rotate(26.0f, glm::vec3(0.0f, 0.24f, 0.0f));
+	//glUniformMatrix4fv(fullTransformMatrixUniformLocation, 1, GL_FALSE, &fullTransformMatrix[0][0]);
+	//glDrawElements(GL_TRIANGLES, numIndices[CUBE_INDEX], GL_UNSIGNED_SHORT, (void*)indexByteOffset[CUBE_INDEX]);
 
 	// sphere
 	glBindVertexArray(vertexArrayObjectIds[SPHERE_INDEX]);
-	fullTransformMatrix = worldToProjectionMatrix *
-		glm::translate(glm::vec3(0.0f, 1.0f, 0.0f)) *
-		glm::rotate(0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+	modelToWorldTransformMatrix =
+		glm::mat4();
+	//glm::translate(glm::vec3(0.0f, 1.0f, 0.0f)) *
+	//glm::rotate(0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+	fullTransformMatrix = worldToProjectionMatrix *modelToWorldTransformMatrix;
 	glUniformMatrix4fv(fullTransformMatrixUniformLocation, 1, GL_FALSE, &fullTransformMatrix[0][0]);
+	glUniformMatrix4fv(modelToWorldTransformMatrixUniformLocation, 1, GL_FALSE, &modelToWorldTransformMatrix[0][0]);
 	glDrawElements(GL_TRIANGLES, numIndices[SPHERE_INDEX], GL_UNSIGNED_SHORT, (void*)indexByteOffset[SPHERE_INDEX]);
 
 	// plane
 	glBindVertexArray(vertexArrayObjectIds[PLANE_INDEX]);
-	fullTransformMatrix = worldToProjectionMatrix *
+	modelToWorldTransformMatrix =
 		glm::mat4();
+	fullTransformMatrix = worldToProjectionMatrix * modelToWorldTransformMatrix;
 	glUniformMatrix4fv(fullTransformMatrixUniformLocation, 1, GL_FALSE, &fullTransformMatrix[0][0]);
+	glUniformMatrix4fv(modelToWorldTransformMatrixUniformLocation, 1, GL_FALSE, &modelToWorldTransformMatrix[0][0]);
 	glDrawElements(GL_TRIANGLES, numIndices[PLANE_INDEX], GL_UNSIGNED_SHORT, (void*)indexByteOffset[PLANE_INDEX]);
 }
 
