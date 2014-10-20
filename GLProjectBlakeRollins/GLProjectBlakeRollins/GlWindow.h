@@ -11,6 +11,7 @@
 #include <ShapeGenerator.h>
 #include <ShapeData.h>
 #include "Camera.h"
+#include "ProjectModel.h"
 
 class GlWindow : public QGLWidget
 {
@@ -32,5 +33,6 @@ protected:
 	void mouseMoveEvent(QMouseEvent* ev);
 	void paintGL();
 public:
+	GlWindow(ProjectModel* model);
 	~GlWindow();
 };

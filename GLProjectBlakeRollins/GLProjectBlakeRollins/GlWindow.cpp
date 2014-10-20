@@ -4,7 +4,7 @@ const uint NUM_VERTICES_PER_TRI = 3;
 const uint NUM_FLOATS_PER_VERTICE = sizeof(Neumont::Vertex) / sizeof(float);
 const uint VERTEX_BYTE_SIZE = NUM_FLOATS_PER_VERTICE * sizeof(float);
 
-glm::vec3 ambientLight(0.3f, 0.3f, 0.3f);
+glm::vec3 ambientLightColor(0.5f, 0.3f, 0.3f);
 glm::vec3 lightPosition(2.0f, 5.0f, -2.0f);
 
 GLuint glBufferId;
@@ -22,6 +22,12 @@ GLuint numIndices[4];
 GLuint vertexByteOffset[4];
 GLuint indexByteOffset[4];
 
+ProjectModel* model;
+
+GlWindow::GlWindow(ProjectModel* model_in)
+{
+	model = model_in;
+}
 
 bool GlWindow::checkShaderStatus(GLuint shaderID) 
 {
@@ -243,8 +249,8 @@ void GlWindow::paintGL()
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 	glViewport(0, 0, width(), height());
 
-	glUniform3fv(ambientLightUniformLocation, 1, &ambientLight[0]);
-	glUniform3fv(lightPositionUniformLocation, 1, &lightPosition[0]);
+	glUniform3fv(ambientLightUniformLocation, 1, &model->ambientLightColor[0]);
+	glUniform3fv(lightPositionUniformLocation, 1, &model->lightPosition[0]);
 	
 
 	glm::mat4 fullTransformMatrix;
