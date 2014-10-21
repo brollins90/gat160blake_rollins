@@ -17,7 +17,10 @@ class GlWindow : public QGLWidget
 {
 private:
 	Q_OBJECT
-	GLuint programID;
+	GLuint programIDPassThrough;
+	GLuint programIDVertex;
+	GLuint programIDFragment;
+
 	QTimer windowTimer;
 	Camera camera;
 

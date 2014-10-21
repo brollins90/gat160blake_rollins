@@ -106,14 +106,18 @@ xcopy /y /d "$(MiddlewareDir)NeumontTools\bin\*.dll" "$(OutDir)"</Command>
   </ItemGroup>
   <ItemGroup>
     <None Include="common.props" />
-    <None Include="Shaders\FragmentShaderCode.glsl">
+    <None Include="Shaders\FragmentShaderFragment.glsl">
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </DeploymentContent>
     </None>
-    <None Include="Shaders\VertexShaderCode.glsl">
+    <None Include="Shaders\FragmentShaderPassThrough.glsl" />
+    <None Include="Shaders\FragmentShaderVertex.glsl" />
+    <None Include="Shaders\VertexShaderFragment.glsl">
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </DeploymentContent>
     </None>
+    <None Include="Shaders\VertexShaderPassThrough.glsl" />
+    <None Include="Shaders\VertexShaderVertex.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
