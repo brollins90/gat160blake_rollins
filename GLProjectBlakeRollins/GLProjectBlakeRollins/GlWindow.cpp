@@ -354,6 +354,16 @@ void GlWindow::paintGL()
 	glUniformMatrix4fv(fullTransformMatrixUniformLocation, 1, GL_FALSE, &fullTransformMatrix[0][0]);
 	glUniformMatrix4fv(modelToWorldTransformMatrixUniformLocation, 1, GL_FALSE, &modelToWorldTransformMatrix[0][0]);
 	glDrawElements(GL_TRIANGLES, numIndices[PLANE_INDEX], GL_UNSIGNED_SHORT, (void*)indexByteOffset[PLANE_INDEX]);
+
+	// camera
+	glUseProgram(programIDPassThrough);
+	glBindVertexArray(vertexArrayObjectIds[CUBE_INDEX]);
+	modelToWorldTransformMatrix =
+		glm::translate(model->lightPosition) *
+		glm::scale(0.5f, 0.5f, 0.5f);
+	fullTransformMatrix = worldToProjectionMatrix *modelToWorldTransformMatrix;
+	glUniformMatrix4fv(glGetUniformLocation(programIDPassThrough, "fullTransformMatrix"), 1, GL_FALSE, &fullTransformMatrix[0][0]);
+	glDrawElements(GL_TRIANGLES, numIndices[CUBE_INDEX], GL_UNSIGNED_SHORT, (void*)indexByteOffset[CUBE_INDEX]);
 }
 
 GlWindow::~GlWindow()

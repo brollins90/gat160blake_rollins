@@ -57,31 +57,43 @@ SliderWindow::SliderWindow(ProjectModel* model_in)
 void SliderWindow::CreateSliders()
 {
 	ambientR = new DebugSlider(0.0f, 1.0f);
+	ambientR->setValue(model->ambientLightColor.r);
 	connect(ambientR, SIGNAL(valueChanged(float)), this, SLOT(updateModel()));
 	ambientG = new DebugSlider(0.0f, 1.0f);
+	ambientG->setValue(model->ambientLightColor.g);
 	connect(ambientG, SIGNAL(valueChanged(float)), this, SLOT(updateModel()));
 	ambientB = new DebugSlider(0.0f, 1.0f);
+	ambientB->setValue(model->ambientLightColor.b);
 	connect(ambientB, SIGNAL(valueChanged(float)), this, SLOT(updateModel()));
 	
 	diffuseR = new DebugSlider(0.0f, 1.0f);
+	diffuseR->setValue(model->diffuseLightColor.r);
 	connect(diffuseR, SIGNAL(valueChanged(float)), this, SLOT(updateModel()));
 	diffuseG = new DebugSlider(0.0f, 1.0f);
+	diffuseG->setValue(model->diffuseLightColor.g);
 	connect(diffuseG, SIGNAL(valueChanged(float)), this, SLOT(updateModel()));
 	diffuseB = new DebugSlider(0.0f, 1.0f);
+	diffuseB->setValue(model->diffuseLightColor.b);
 	connect(diffuseB, SIGNAL(valueChanged(float)), this, SLOT(updateModel()));
 
 	specularR = new DebugSlider(0.0f, 1.0f);
+	specularR->setValue(model->specularLightColor.r);
 	connect(specularR, SIGNAL(valueChanged(float)), this, SLOT(updateModel()));
 	specularG = new DebugSlider(0.0f, 1.0f);
+	specularG->setValue(model->specularLightColor.g);
 	connect(specularG, SIGNAL(valueChanged(float)), this, SLOT(updateModel()));
 	specularB = new DebugSlider(0.0f, 1.0f);
+	specularB->setValue(model->specularLightColor.b);
 	connect(specularB, SIGNAL(valueChanged(float)), this, SLOT(updateModel()));
 
 	lightPositionX = new DebugSlider();
+	lightPositionX->setValue(model->lightPosition.x);
 	connect(lightPositionX, SIGNAL(valueChanged(float)), this, SLOT(updateModel()));
 	lightPositionY = new DebugSlider();
+	lightPositionY->setValue(model->lightPosition.y);
 	connect(lightPositionY, SIGNAL(valueChanged(float)), this, SLOT(updateModel()));
 	lightPositionZ = new DebugSlider();
+	lightPositionZ->setValue(model->lightPosition.z);
 	connect(lightPositionZ, SIGNAL(valueChanged(float)), this, SLOT(updateModel()));
 }
 

@@ -15,10 +15,10 @@ ProgramWindow::ProgramWindow()
 	setLayout(mainLayout);
 	SliderWindow* sliders = new SliderWindow(model);
 	sliders->setMinimumHeight(400);
+	mainLayout->addWidget(sliders);
 	GlWindow* window = new GlWindow(model);
 	window->setMinimumWidth(1600);
 	window->setMinimumHeight(500);
-	mainLayout->addWidget(sliders);
 	mainLayout->addWidget(window);
 }
 
