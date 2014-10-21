@@ -26,6 +26,7 @@ private:
 
 	void createProgram();
 	bool checkShaderStatus(GLuint shaderID);
+	bool checkProgramStatus(GLuint programID);
 	void compileShaders();
 	void sendDataToHardware();
 private slots:

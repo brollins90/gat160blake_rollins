@@ -5,10 +5,6 @@ const uint NUM_FLOATS_PER_VERTICE = sizeof(Neumont::Vertex) / sizeof(float);
 const uint VERTEX_BYTE_SIZE = NUM_FLOATS_PER_VERTICE * sizeof(float);
 
 GLuint glBufferId;
-GLint fullTransformMatrixUniformLocation;
-GLint ambientLightUniformLocation;
-GLint lightPositionUniformLocation;
-GLint modelToWorldTransformMatrixUniformLocation;
 
 const uint ARROW_INDEX = 0;
 const uint CUBE_INDEX = 1;
@@ -26,16 +22,35 @@ GlWindow::GlWindow(ProjectModel* model_in)
 	model = model_in;
 }
 
-bool GlWindow::checkShaderStatus(GLuint shaderID) 
+bool GlWindow::checkShaderStatus(GLuint shaderID)
 {
 	GLint compilationStatus;
 	glGetShaderiv(shaderID, GL_COMPILE_STATUS, &compilationStatus);
+	assert(glGetError() == GL_NO_ERROR);
+
 	if (compilationStatus != 0) {
 		GLint logLength;
 		glGetShaderiv(shaderID, GL_INFO_LOG_LENGTH, &logLength);
 		char* buffer = new char[logLength];
 		GLsizei bitBucket;
 		glGetShaderInfoLog(shaderID, logLength, &bitBucket, buffer);
+		return false;
+	}
+	return true;
+}
+
+bool GlWindow::checkProgramStatus(GLuint programID)
+{
+	GLint compilationStatus;
+	glGetProgramiv(programID, GL_LINK_STATUS, &compilationStatus);
+	assert(glGetError() == GL_NO_ERROR);
+
+	if (compilationStatus != 0) {
+		GLint logLength;
+		glGetProgramiv(programID, GL_INFO_LOG_LENGTH, &logLength);
+		char* buffer = new char[logLength];
+		GLsizei bitBucket;
+		glGetProgramInfoLog(programID, logLength, &bitBucket, buffer);
 		return false;
 	}
 	return true;
@@ -79,7 +94,7 @@ void GlWindow::compileShaders()
 	glslCode[0] = temp.c_str();
 	glShaderSource(fragmentShaderIDPassThrough, 1, glslCode, 0);
 
-	readShaderCode("Shaders/VertexShaderVertex.glsl");
+	temp = readShaderCode("Shaders/VertexShaderVertex.glsl");
 	glslCode[0] = temp.c_str();
 	glShaderSource(vertexShaderIDVertex, 1, glslCode, 0);
 	temp = readShaderCode("Shaders/FragmentShaderVertex.glsl").c_str();
@@ -95,37 +110,39 @@ void GlWindow::compileShaders()
 
 	glCompileShader(vertexShaderIDPassThrough);
 	glCompileShader(fragmentShaderIDPassThrough);
-	glCompileShader(vertexShaderIDVertex);
-	glCompileShader(fragmentShaderIDVertex);
-	glCompileShader(vertexShaderIDFragment);
-	glCompileShader(fragmentShaderIDFragment);
-
 	checkShaderStatus(vertexShaderIDPassThrough);
 	checkShaderStatus(fragmentShaderIDPassThrough);
-	checkShaderStatus(vertexShaderIDVertex);
-	checkShaderStatus(fragmentShaderIDVertex);
-	checkShaderStatus(vertexShaderIDFragment);
-	checkShaderStatus(fragmentShaderIDFragment);
-
 	glAttachShader(programIDPassThrough, vertexShaderIDPassThrough);
 	glAttachShader(programIDPassThrough, fragmentShaderIDPassThrough);
-	glAttachShader(programIDVertex, vertexShaderIDVertex);
-	glAttachShader(programIDVertex, fragmentShaderIDVertex);
-	glAttachShader(programIDFragment, vertexShaderIDFragment);
-	glAttachShader(programIDFragment, fragmentShaderIDFragment);
-
 	glLinkProgram(programIDPassThrough);
-	glLinkProgram(programIDVertex);
-	glLinkProgram(programIDFragment);
-
+	checkProgramStatus(programIDPassThrough);
 	glDeleteShader(vertexShaderIDPassThrough);
 	glDeleteShader(fragmentShaderIDPassThrough);
+
+
+	glCompileShader(vertexShaderIDVertex);
+	glCompileShader(fragmentShaderIDVertex);
+	checkShaderStatus(vertexShaderIDVertex);
+	checkShaderStatus(fragmentShaderIDVertex);
+	glAttachShader(programIDVertex, vertexShaderIDVertex);
+	glAttachShader(programIDVertex, fragmentShaderIDVertex);
+	glLinkProgram(programIDVertex);
+	checkProgramStatus(programIDVertex);
 	glDeleteShader(vertexShaderIDVertex);
 	glDeleteShader(fragmentShaderIDVertex);
+
+	glCompileShader(vertexShaderIDFragment);
+	glCompileShader(fragmentShaderIDFragment);
+	checkShaderStatus(vertexShaderIDFragment);
+	checkShaderStatus(fragmentShaderIDFragment);
+	glAttachShader(programIDFragment, vertexShaderIDFragment);
+	glAttachShader(programIDFragment, fragmentShaderIDFragment);
+	glLinkProgram(programIDFragment);
+	checkProgramStatus(programIDFragment);
 	glDeleteShader(vertexShaderIDFragment);
 	glDeleteShader(fragmentShaderIDFragment);
 
-	glUseProgram(programIDPassThrough);
+	glUseProgram(0);
 }
 
 void GlWindow::initializeGL()
@@ -277,12 +294,13 @@ void GlWindow::mouseMoveEvent(QMouseEvent* ev)
 
 void GlWindow::paintGL()
 {
-	GLuint programIDCurrent = programIDFragment;
+	GLuint programIDCurrent = programIDVertex;
 	glUseProgram(programIDCurrent);
-	ambientLightUniformLocation = glGetUniformLocation(programIDCurrent, "ambientLight");
-	lightPositionUniformLocation = glGetUniformLocation(programIDCurrent, "lightPosition");
-	fullTransformMatrixUniformLocation = glGetUniformLocation(programIDCurrent, "fullTransformMatrix");
-	modelToWorldTransformMatrixUniformLocation = glGetUniformLocation(programIDCurrent, "modelToWorldTransformMatrix");
+
+	GLint fullTransformMatrixUniformLocation = glGetUniformLocation(programIDCurrent, "fullTransformMatrix");
+	GLint ambientLightUniformLocation = glGetUniformLocation(programIDCurrent, "ambientLight");
+	GLint lightPositionUniformLocation = glGetUniformLocation(programIDCurrent, "lightPosition");
+	GLint modelToWorldTransformMatrixUniformLocation = glGetUniformLocation(programIDCurrent, "modelToWorldTransformMatrix");
 
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 	glViewport(0, 0, width(), height());

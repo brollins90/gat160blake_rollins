@@ -10,14 +10,10 @@ uniform mat4 fullTransformMatrix;
 uniform mat4 modelToWorldTransformMatrix;
 
 out vec3 frag_color;
-//out vec3 frag_normal;
-//out vec3 frag_position;
 
 void main()
 {
 	vec4 v = vec4(v_position, 1.0f);
     gl_Position = fullTransformMatrix * v;
 	frag_color = ambientLight;
-//	frag_normal = mat3(modelToWorldTransformMatrix) * v_normal;
-//	frag_position = vec3(modelToWorldTransformMatrix * v);
 }
