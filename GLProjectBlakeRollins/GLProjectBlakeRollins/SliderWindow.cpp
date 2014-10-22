@@ -13,45 +13,62 @@ SliderWindow::SliderWindow(ProjectModel* model_in)
 	QVBoxLayout* slidersLayout = new QVBoxLayout();
 	setLayout(slidersLayout);
 
+	QHBoxLayout* row0Layout = new QHBoxLayout();
+	slidersLayout->addLayout(row0Layout);
+	row0Layout->addWidget(new QLabel("Blake's GL Project Lighting "));	
+	
 	QHBoxLayout* row1Layout = new QHBoxLayout();
 	slidersLayout->addLayout(row1Layout);
-	row1Layout->addWidget(new QLabel("Ambient < "));
-	row1Layout->addWidget(ambientR);
-	row1Layout->addWidget(new QLabel(" , "));
-	row1Layout->addWidget(ambientG);
-	row1Layout->addWidget(new QLabel(" , "));
-	row1Layout->addWidget(ambientB);
-	row1Layout->addWidget(new QLabel(" >"));
+
+	QHBoxLayout* row11Layout = new QHBoxLayout();
+	row1Layout->addLayout(row11Layout);
+	row11Layout->addWidget(new QLabel("Ambient < "));
+	row11Layout->addWidget(ambientR);
+	row11Layout->addWidget(new QLabel(" , "));
+	row11Layout->addWidget(ambientG);
+	row11Layout->addWidget(new QLabel(" , "));
+	row11Layout->addWidget(ambientB);
+	row11Layout->addWidget(new QLabel(" >"));
+
+	QHBoxLayout* row12Layout = new QHBoxLayout();
+	row1Layout->addLayout(row12Layout);
+	row12Layout->addWidget(new QLabel("Diffuse < "));
+	row12Layout->addWidget(diffuseR);
+	row12Layout->addWidget(new QLabel(" , "));
+	row12Layout->addWidget(diffuseG);
+	row12Layout->addWidget(new QLabel(" , "));
+	row12Layout->addWidget(diffuseB);
+	row12Layout->addWidget(new QLabel(" >"));
+
 
 	QHBoxLayout* row2Layout = new QHBoxLayout();
 	slidersLayout->addLayout(row2Layout);
-	row2Layout->addWidget(new QLabel("diffuse < "));
-	row2Layout->addWidget(diffuseR);
-	row2Layout->addWidget(new QLabel(" , "));
-	row2Layout->addWidget(diffuseG);
-	row2Layout->addWidget(new QLabel(" , "));
-	row2Layout->addWidget(diffuseB);
-	row2Layout->addWidget(new QLabel(" >"));
+
+	QHBoxLayout* row21Layout = new QHBoxLayout();
+	row2Layout->addLayout(row21Layout);
+	row21Layout->addWidget(new QLabel("Specular < "));
+	row21Layout->addWidget(specularR);
+	row21Layout->addWidget(new QLabel(" , "));
+	row21Layout->addWidget(specularG);
+	row21Layout->addWidget(new QLabel(" , "));
+	row21Layout->addWidget(specularB);
+	row21Layout->addWidget(new QLabel(" >"));
+
+	QHBoxLayout* row22Layout = new QHBoxLayout();
+	row2Layout->addLayout(row22Layout);
+	row22Layout->addWidget(new QLabel("Specular Exponent < "));
+	row22Layout->addWidget(specularExp);
+	row22Layout->addWidget(new QLabel(" >"));
 
 	QHBoxLayout* row3Layout = new QHBoxLayout();
 	slidersLayout->addLayout(row3Layout);
-	row3Layout->addWidget(new QLabel("specular < "));
-	row3Layout->addWidget(specularR);
+	row3Layout->addWidget(new QLabel("position < "));
+	row3Layout->addWidget(lightPositionX);
 	row3Layout->addWidget(new QLabel(" , "));
-	row3Layout->addWidget(specularG);
+	row3Layout->addWidget(lightPositionY);
 	row3Layout->addWidget(new QLabel(" , "));
-	row3Layout->addWidget(specularB);
+	row3Layout->addWidget(lightPositionZ);
 	row3Layout->addWidget(new QLabel(" >"));
-
-	QHBoxLayout* row4Layout = new QHBoxLayout();
-	slidersLayout->addLayout(row4Layout);
-	row4Layout->addWidget(new QLabel("position < "));
-	row4Layout->addWidget(lightPositionX);
-	row4Layout->addWidget(new QLabel(" , "));
-	row4Layout->addWidget(lightPositionY);
-	row4Layout->addWidget(new QLabel(" , "));
-	row4Layout->addWidget(lightPositionZ);
-	row4Layout->addWidget(new QLabel(" >"));
 }
 
 void SliderWindow::CreateSliders()
@@ -85,6 +102,11 @@ void SliderWindow::CreateSliders()
 	specularB = new DebugSlider(0.0f, 1.0f);
 	specularB->setValue(model->specularLightColor.b);
 	connect(specularB, SIGNAL(valueChanged(float)), this, SLOT(updateModel()));
+	specularExp = new DebugSlider(1.0f, 50.0f);
+	specularExp->setValue(model->specularExponent);
+	connect(specularExp, SIGNAL(valueChanged(float)), this, SLOT(updateModel()));
+
+	
 
 	lightPositionX = new DebugSlider();
 	lightPositionX->setValue(model->lightPosition.x);
@@ -112,9 +134,13 @@ void SliderWindow::updateModel()
 	model->specularLightColor.g = specularG->value();
 	model->specularLightColor.b = specularB->value();
 
+	model->specularExponent = specularExp->value();
+
 	model->lightPosition.x = lightPositionX->value();
 	model->lightPosition.y = lightPositionY->value();
 	model->lightPosition.z = lightPositionZ->value();
+
+
 }
 
 SliderWindow::~SliderWindow()

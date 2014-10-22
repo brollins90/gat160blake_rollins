@@ -18,6 +18,7 @@ private:
 	DebugSlider* specularR;
 	DebugSlider* specularG;
 	DebugSlider* specularB;
+	DebugSlider* specularExp;
 	DebugSlider* lightPositionX;
 	DebugSlider* lightPositionY;
 	DebugSlider* lightPositionZ;

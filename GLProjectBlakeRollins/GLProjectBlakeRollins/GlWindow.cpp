@@ -294,13 +294,14 @@ void GlWindow::mouseMoveEvent(QMouseEvent* ev)
 
 void GlWindow::paintGL()
 {
-	GLuint programIDCurrent = programIDFragment;
+	GLuint programIDCurrent = programIDPassThrough;
 	glUseProgram(programIDCurrent);
 
 	GLint modelToProjectionMatrixUniformLocation = glGetUniformLocation(programIDCurrent, "modelToProjectionMatrix");
 	GLint ambientLightColorUniformLocation = glGetUniformLocation(programIDCurrent, "ambientLightColor");
 	GLint diffuseLightColorUniformLocation = glGetUniformLocation(programIDCurrent, "diffuseLightColor");
 	GLint specularLightColorUniformLocation = glGetUniformLocation(programIDCurrent, "specularLightColor");
+	GLint specularExponentUniformLocation = glGetUniformLocation(programIDCurrent, "specularExponent");
 	GLint lightPositionWorldUniformLocation = glGetUniformLocation(programIDCurrent, "lightPositionWorld");
 	GLint cameraPositionWorldUniformLocation = glGetUniformLocation(programIDCurrent, "cameraPositionWorld");
 	GLint modelToWorldMatrixUniformLocation = glGetUniformLocation(programIDCurrent, "modelToWorldMatrix");
@@ -313,6 +314,7 @@ void GlWindow::paintGL()
 	glUniform4fv(ambientLightColorUniformLocation, 1, &model->ambientLightColor[0]);
 	glUniform4fv(diffuseLightColorUniformLocation, 1, &model->diffuseLightColor[0]);
 	glUniform4fv(specularLightColorUniformLocation, 1, &model->specularLightColor[0]);
+	glUniform1f(specularExponentUniformLocation, model->specularExponent);
 	glUniform3fv(lightPositionWorldUniformLocation, 1, &model->lightPosition[0]);
 	glm::vec3 eyePosition = camera.getPosition();
 	glUniform3fv(cameraPositionWorldUniformLocation, 1, &eyePosition[0]);

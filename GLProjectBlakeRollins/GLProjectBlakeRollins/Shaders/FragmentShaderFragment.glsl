@@ -8,6 +8,7 @@ uniform vec4 diffuseLightColor;
 uniform vec4 specularLightColor;
 uniform vec3 lightPositionWorld;
 uniform vec3 cameraPositionWorld;
+uniform float specularExponent;
 
 out vec4 out_color;
 
@@ -23,7 +24,7 @@ void main()
 	vec3 reflectedLightVectorWorld = reflect(-lightVectorWorld, normalize(fragmentNormalWorld));
 	vec3 eyeVectorWorld = normalize(cameraPositionWorld - fragmentPositionWorld);
 	float specularity = dot(reflectedLightVectorWorld, eyeVectorWorld);
-	specularity = pow(specularity, 25);
+	specularity = pow(specularity, specularExponent);
 	
 	vec4 specularLightIntensity = vec4(specularity, specularity, specularity, 1.0);
 	vec4 specularColor = specularLightIntensity * specularLightColor;
