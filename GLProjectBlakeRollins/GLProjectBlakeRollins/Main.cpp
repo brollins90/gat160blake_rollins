@@ -6,8 +6,8 @@ int main(int argc, char* argv[])
 	QApplication app(argc, argv);
 
 	ProgramWindow* mainWindow = new ProgramWindow();
-	//mainWindow->setMinimumWidth(1600);
-	//mainWindow->setFixedHeight(900);
+	mainWindow->setMinimumWidth(1600);
+	mainWindow->setMinimumHeight(900);
 	mainWindow->show();
 	return app.exec();
 }
