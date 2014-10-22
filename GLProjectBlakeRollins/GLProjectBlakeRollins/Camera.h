@@ -14,6 +14,7 @@ private:
 
 public:
 	Camera();
+	glm::vec3 getPosition();
 	glm::mat4 getWorldToViewMatrix();
 	void mouseUpdate(const glm::vec2& newMousePosition);
 

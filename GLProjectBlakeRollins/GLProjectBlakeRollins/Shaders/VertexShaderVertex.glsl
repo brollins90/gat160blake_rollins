@@ -19,7 +19,7 @@ void main()
 	vec3 trans_position = vec3(modelToWorldMatrix * vertexPositionModel);
 
 	vec3 lightVector = normalize(lightPositionWorld - trans_position);
-	float brightness = dot(lightVector, trans_normal);
+	float brightness = dot(lightVector, normalize(trans_normal));
     vec4 diffuseLightIntensity = vec4(brightness, brightness, brightness, 1.0);
 
 	fragmentColor = clamp(diffuseLightIntensity, 0, 1) + ambientLightColor;

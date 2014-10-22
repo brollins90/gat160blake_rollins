@@ -13,6 +13,10 @@ Camera::Camera()
 	right = glm::cross(direction, UP);
 }
 
+glm::vec3 Camera::getPosition()
+{
+	return position;
+}
 
 glm::mat4 Camera::getWorldToViewMatrix()
 {
