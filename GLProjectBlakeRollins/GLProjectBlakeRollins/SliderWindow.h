@@ -2,6 +2,10 @@
 #include <Qt\qwidget.h>
 #include "DebugSlider.h"
 #include "ProjectModel.h"
+#include "Qt\qlayout.h"
+#include "Qt\qlabel.h"
+#include "Qt\qcombobox.h"
+#include "Qt\qdebug.h"
 
 class SliderWindow : public QWidget
 {
@@ -22,6 +26,7 @@ private:
 	DebugSlider* lightPositionX;
 	DebugSlider* lightPositionY;
 	DebugSlider* lightPositionZ;
+	QComboBox* programCombo;
 
 private slots:
 void updateModel();

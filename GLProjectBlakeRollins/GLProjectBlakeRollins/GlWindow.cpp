@@ -294,7 +294,9 @@ void GlWindow::mouseMoveEvent(QMouseEvent* ev)
 
 void GlWindow::paintGL()
 {
-	GLuint programIDCurrent = programIDPassThrough;
+	GLuint programIDCurrent = model->programIndex + 1;
+//	GLuint programIDCurrent = programIDPassThrough;
+
 	glUseProgram(programIDCurrent);
 
 	GLint modelToProjectionMatrixUniformLocation = glGetUniformLocation(programIDCurrent, "modelToProjectionMatrix");

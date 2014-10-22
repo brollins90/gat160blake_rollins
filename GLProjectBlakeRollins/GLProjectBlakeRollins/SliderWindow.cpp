@@ -1,8 +1,4 @@
 #include "SliderWindow.h"
-#include "Qt\qlayout.h"
-#include "Qt\qlabel.h"
-
-#include "Qt\qdebug.h"
 
 
 SliderWindow::SliderWindow(ProjectModel* model_in)
@@ -15,7 +11,8 @@ SliderWindow::SliderWindow(ProjectModel* model_in)
 
 	QHBoxLayout* row0Layout = new QHBoxLayout();
 	slidersLayout->addLayout(row0Layout);
-	row0Layout->addWidget(new QLabel("Blake's GL Project Lighting "));	
+	row0Layout->addWidget(new QLabel("Blake's GL Project Lighting "));
+	row0Layout->addWidget(programCombo);
 	
 	QHBoxLayout* row1Layout = new QHBoxLayout();
 	slidersLayout->addLayout(row1Layout);
@@ -117,6 +114,14 @@ void SliderWindow::CreateSliders()
 	lightPositionZ = new DebugSlider();
 	lightPositionZ->setValue(model->lightPosition.z);
 	connect(lightPositionZ, SIGNAL(valueChanged(float)), this, SLOT(updateModel()));
+
+
+	programCombo = new QComboBox();
+	programCombo->addItem("Pass Through", 0);
+	programCombo->addItem("Fragment", 1);
+	programCombo->addItem("Vertex", 2);
+	programCombo->setCurrentIndex(model->programIndex);
+	connect(programCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(updateModel()));
 }
 
 void SliderWindow::updateModel()
@@ -140,6 +145,7 @@ void SliderWindow::updateModel()
 	model->lightPosition.y = lightPositionY->value();
 	model->lightPosition.z = lightPositionZ->value();
 
+	model->programIndex = programCombo->currentIndex();
 
 }
 
