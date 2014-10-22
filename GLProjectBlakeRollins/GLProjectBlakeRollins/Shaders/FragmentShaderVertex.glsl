@@ -1,9 +1,9 @@
 #version 430
 
-in vec4 vertexColorWorld;
+in vec4 fragmentColor;
 out vec4 out_color;
 
 void main()
 {
-    out_color = vertexColorWorld;
+    out_color = fragmentColor;
 }

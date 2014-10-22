@@ -1,7 +1,7 @@
 #version 430
 
 in layout(location=0) vec3 vertexPositionModel;
-in layout(location=1) vec4 vertexColorWorld;
+in layout(location=1) vec4 vertexColor;
 in layout(location=2) vec3 vertexNormalModel;
 
 uniform mat4 modelToProjectionMatrix;

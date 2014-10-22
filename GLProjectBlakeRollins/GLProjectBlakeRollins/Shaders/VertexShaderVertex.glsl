@@ -1,31 +1,27 @@
 #version 430
 
-in layout(location=0) vec3 vertexPositionModel;
-in layout(location=1) vec4 vertexColorModel;
+in layout(location=0) vec4 vertexPositionModel;
+in layout(location=1) vec4 vertexColor;
 in layout(location=2) vec3 vertexNormalModel;
 
-uniform vec3 ambientLight;
-uniform vec3 lightPosition;
+uniform vec4 ambientLightColor;
+uniform vec3 lightPositionWorld;
 uniform mat4 modelToProjectionMatrix;
 uniform mat4 modelToWorldMatrix;
 
-out vec3 vertexColorWorld;
+out vec4 fragmentColor;
 
 void main()
 {
-	vec4 v = vec4(vertexPositionModel, 1.0f);
-    gl_Position = modelToProjectionMatrix * v;
+    gl_Position = modelToProjectionMatrix * vertexPositionModel;
 
 	vec3 trans_normal = mat3(modelToWorldMatrix) * vertexNormalModel;
-	vec3 trans_position = vec3(modelToWorldMatrix * v);
+	vec3 trans_position = vec3(modelToWorldMatrix * vertexPositionModel);
 
-	vec3 lightVector = normalize(lightPosition - trans_position);
+	vec3 lightVector = normalize(lightPositionWorld - trans_position);
 	float brightness = dot(lightVector, trans_normal);
+    vec4 diffuseLightIntensity = vec4(brightness, brightness, brightness, 1.0);
 
-	vec3 light = vec3(
-	    ambientLight.x + brightness,
-		ambientLight.y + brightness,
-		ambientLight.z + brightness);
+	fragmentColor = clamp(diffuseLightIntensity, 0, 1) + ambientLightColor;
 
-	vertexColorWorld = light;
 }

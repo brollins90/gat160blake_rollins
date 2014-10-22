@@ -298,15 +298,15 @@ void GlWindow::paintGL()
 	glUseProgram(programIDCurrent);
 
 	GLint modelToProjectionMatrixUniformLocation = glGetUniformLocation(programIDCurrent, "modelToProjectionMatrix");
-	GLint ambientLightUniformLocation = glGetUniformLocation(programIDCurrent, "ambientLight");
-	GLint lightPositionUniformLocation = glGetUniformLocation(programIDCurrent, "lightPosition");
+	GLint ambientLightColorUniformLocation = glGetUniformLocation(programIDCurrent, "ambientLightColor");
+	GLint lightPositionWorldUniformLocation = glGetUniformLocation(programIDCurrent, "lightPositionWorld");
 	GLint modelToWorldMatrixUniformLocation = glGetUniformLocation(programIDCurrent, "modelToWorldMatrix");
 
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 	glViewport(0, 0, width(), height());
 
-	glUniform3fv(ambientLightUniformLocation, 1, &model->ambientLightColor[0]);
-	glUniform3fv(lightPositionUniformLocation, 1, &model->lightPosition[0]);
+	glUniform4fv(ambientLightColorUniformLocation, 1, &model->ambientLightColor[0]);
+	glUniform3fv(lightPositionWorldUniformLocation, 1, &model->lightPosition[0]);
 	
 
 	glm::mat4 modelToProjectionMatrix;
