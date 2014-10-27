@@ -215,40 +215,48 @@ void GlWindow::sendDataToHardware()
 	glEnableVertexAttribArray(0); // v_position
 	glEnableVertexAttribArray(1); // v_color
 	glEnableVertexAttribArray(2); // v_normal
+	glEnableVertexAttribArray(3); // v_uv
 	glBindBuffer(GL_ARRAY_BUFFER, glBufferId);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(vertexByteOffset[ARROW_INDEX] + (0 * sizeof(GL_FLOAT))));
 	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(vertexByteOffset[ARROW_INDEX] + (3 * sizeof(GL_FLOAT))));
 	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(vertexByteOffset[ARROW_INDEX] + (7 * sizeof(GL_FLOAT))));
+	glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(vertexByteOffset[ARROW_INDEX] + (9 * sizeof(GL_FLOAT))));
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, glBufferId);
 
 	glBindVertexArray(vertexArrayObjectIds[CUBE_INDEX]);
 	glEnableVertexAttribArray(0); // v_position
 	glEnableVertexAttribArray(1); // v_color
 	glEnableVertexAttribArray(2); // v_normal
+	glEnableVertexAttribArray(3); // v_uv
 	glBindBuffer(GL_ARRAY_BUFFER, glBufferId);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(vertexByteOffset[CUBE_INDEX] + (0 * sizeof(GL_FLOAT))));
 	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(vertexByteOffset[CUBE_INDEX] + (3 * sizeof(GL_FLOAT))));
 	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(vertexByteOffset[CUBE_INDEX] + (7 * sizeof(GL_FLOAT))));
+	glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(vertexByteOffset[CUBE_INDEX] + (9 * sizeof(GL_FLOAT))));
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, glBufferId);
 
 	glBindVertexArray(vertexArrayObjectIds[SPHERE_INDEX]);
 	glEnableVertexAttribArray(0); // v_position
 	glEnableVertexAttribArray(1); // v_color
 	glEnableVertexAttribArray(2); // v_normal
+	glEnableVertexAttribArray(3); // v_uv
 	glBindBuffer(GL_ARRAY_BUFFER, glBufferId);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(vertexByteOffset[SPHERE_INDEX] + (0 * sizeof(GL_FLOAT))));
 	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(vertexByteOffset[SPHERE_INDEX] + (3 * sizeof(GL_FLOAT))));
 	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(vertexByteOffset[SPHERE_INDEX] + (7 * sizeof(GL_FLOAT))));
+	glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(vertexByteOffset[SPHERE_INDEX] + (9 * sizeof(GL_FLOAT))));
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, glBufferId);
 
 	glBindVertexArray(vertexArrayObjectIds[PLANE_INDEX]);
 	glEnableVertexAttribArray(0); // v_position
 	glEnableVertexAttribArray(1); // v_color
 	glEnableVertexAttribArray(2); // v_normal
+	glEnableVertexAttribArray(3); // v_uv
 	glBindBuffer(GL_ARRAY_BUFFER, glBufferId);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(vertexByteOffset[PLANE_INDEX] + (0 * sizeof(GL_FLOAT))));
 	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(vertexByteOffset[PLANE_INDEX] + (3 * sizeof(GL_FLOAT))));
 	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(vertexByteOffset[PLANE_INDEX] + (7 * sizeof(GL_FLOAT))));
+	glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(vertexByteOffset[PLANE_INDEX] + (7 * sizeof(GL_FLOAT))));
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, glBufferId);
 
 }
