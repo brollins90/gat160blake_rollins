@@ -5,6 +5,7 @@ const uint NUM_FLOATS_PER_VERTICE = sizeof(Neumont::Vertex) / sizeof(float);
 const uint VERTEX_BYTE_SIZE = NUM_FLOATS_PER_VERTICE * sizeof(float);
 
 GLuint glBufferId;
+GLuint glTextureId;
 
 const uint ARROW_INDEX = 0;
 const uint CUBE_INDEX = 1;
@@ -259,6 +260,17 @@ void GlWindow::sendDataToHardware()
 	glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(vertexByteOffset[PLANE_INDEX] + (7 * sizeof(GL_FLOAT))));
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, glBufferId);
 
+
+	TextureImage myImage = TextureImage("uvtemplate.bmp");
+
+	glGenTextures(1, &glTextureId);
+	glBindTexture(GL_TEXTURE_2D, glTextureId);
+	glActiveTexture(GL_TEXTURE0);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, myImage.width, myImage.height, 0, GL_RGB, GL_UNSIGNED_BYTE, myImage.data);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
 }
 
 void GlWindow::windowUpdate()
@@ -303,7 +315,6 @@ void GlWindow::mouseMoveEvent(QMouseEvent* ev)
 void GlWindow::paintGL()
 {
 	GLuint programIDCurrent = model->programIndex + 1;
-//	GLuint programIDCurrent = programIDPassThrough;
 
 	glUseProgram(programIDCurrent);
 

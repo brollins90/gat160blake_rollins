@@ -12,6 +12,7 @@
 #include <ShapeData.h>
 #include "Camera.h"
 #include "ProjectModel.h"
+#include "TextureImage.h"
 
 class GlWindow : public QGLWidget
 {

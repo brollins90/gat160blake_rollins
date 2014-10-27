@@ -51,6 +51,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(MiddlewareDir)Qt\include;$(MiddlewareDir)glew\include;$(MiddlewareDir)glm;$(MiddlewareDir)NeumontTools\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_MBCS;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -95,6 +96,7 @@ xcopy /y /d "$(MiddlewareDir)NeumontTools\bin\*.dll" "$(OutDir)"</Command>
     <ClCompile Include="ProgramWindow.cpp" />
     <ClCompile Include="SliderWindow.cpp" />
     <ClCompile Include="SliderWindow_moc.cpp" />
+    <ClCompile Include="TextureImage.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
@@ -103,6 +105,7 @@ xcopy /y /d "$(MiddlewareDir)NeumontTools\bin\*.dll" "$(OutDir)"</Command>
     <ClInclude Include="ProgramWindow.h" />
     <ClInclude Include="ProjectModel.h" />
     <ClInclude Include="SliderWindow.h" />
+    <ClInclude Include="TextureImage.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="common.props" />
