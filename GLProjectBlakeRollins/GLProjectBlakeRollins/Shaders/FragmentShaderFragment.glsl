@@ -2,6 +2,7 @@
 
 in vec3 fragmentNormalWorld;
 in vec3 fragmentPositionWorld;
+in vec2 fragmentUV;
 
 uniform vec4 ambientLightColor;
 uniform vec4 diffuseLightColor;
@@ -9,6 +10,9 @@ uniform vec4 specularLightColor;
 uniform vec3 lightPositionWorld;
 uniform vec3 cameraPositionWorld;
 uniform float specularExponent;
+uniform float addLighting;
+
+uniform sampler2D sampler;
 
 out vec4 out_color;
 
@@ -29,5 +33,8 @@ void main()
 	vec4 specularLightIntensity = vec4(specularity, specularity, specularity, 1.0);
 	vec4 specularColor = specularLightIntensity * specularLightColor;
 
-	out_color = ambientLightColor + clamp(diffuseColor, 0, 1) + clamp(specularColor, 0, 1);
+	vec4 finalColor = ambientLightColor + clamp(diffuseColor, 0, 1) + clamp(specularColor, 0, 1);
+	vec4 finalTexure = texture(sampler, fragmentUV).rgba;
+
+	out_color = (addLighting > 0) ? finalTexure + finalColor : finalTexure;
 }

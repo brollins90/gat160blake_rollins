@@ -13,6 +13,8 @@ SliderWindow::SliderWindow(ProjectModel* model_in)
 	slidersLayout->addLayout(row0Layout);
 	row0Layout->addWidget(new QLabel("Blake's GL Project Lighting "));
 	row0Layout->addWidget(programCombo);
+	row0Layout->addWidget(new QLabel("Lighting"));
+	row0Layout->addWidget(lightingCheck);
 	
 	QHBoxLayout* row1Layout = new QHBoxLayout();
 	slidersLayout->addLayout(row1Layout);
@@ -122,6 +124,9 @@ void SliderWindow::CreateSliders()
 	programCombo->addItem("Vertex", 2);
 	programCombo->setCurrentIndex(model->programIndex);
 	connect(programCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(updateModel()));
+
+	lightingCheck = new QCheckBox();
+	connect(lightingCheck, SIGNAL(stateChanged(int)), this, SLOT(updateModel()));
 }
 
 void SliderWindow::updateModel()
@@ -147,6 +152,14 @@ void SliderWindow::updateModel()
 
 	model->programIndex = programCombo->currentIndex();
 
+	if (lightingCheck->isChecked())
+	{
+		model->addLighting = 1;
+	}
+	else
+	{
+		model->addLighting = 0;
+	}
 }
 
 SliderWindow::~SliderWindow()

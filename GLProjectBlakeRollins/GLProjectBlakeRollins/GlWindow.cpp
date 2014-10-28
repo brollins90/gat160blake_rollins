@@ -326,6 +326,7 @@ void GlWindow::paintGL()
 	GLint lightPositionWorldUniformLocation = glGetUniformLocation(programIDCurrent, "lightPositionWorld");
 	GLint cameraPositionWorldUniformLocation = glGetUniformLocation(programIDCurrent, "cameraPositionWorld");
 	GLint modelToWorldMatrixUniformLocation = glGetUniformLocation(programIDCurrent, "modelToWorldMatrix");
+	GLint addLightingUniformLocation = glGetUniformLocation(programIDCurrent, "addLighting");
 
 
 	
@@ -339,6 +340,7 @@ void GlWindow::paintGL()
 	glUniform3fv(lightPositionWorldUniformLocation, 1, &model->lightPosition[0]);
 	glm::vec3 eyePosition = camera.getPosition();
 	glUniform3fv(cameraPositionWorldUniformLocation, 1, &eyePosition[0]);
+	glUniform1f(addLightingUniformLocation, (model->addLighting > 0) ? 1.0f : -1.0f);
 
 
 	glm::mat4 modelToProjectionMatrix;

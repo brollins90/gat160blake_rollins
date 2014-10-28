@@ -6,6 +6,7 @@
 #include "Qt\qlabel.h"
 #include "Qt\qcombobox.h"
 #include "Qt\qdebug.h"
+#include "Qt\qcheckbox.h"
 
 class SliderWindow : public QWidget
 {
@@ -27,6 +28,7 @@ private:
 	DebugSlider* lightPositionY;
 	DebugSlider* lightPositionZ;
 	QComboBox* programCombo;
+	QCheckBox* lightingCheck;
 
 private slots:
 void updateModel();

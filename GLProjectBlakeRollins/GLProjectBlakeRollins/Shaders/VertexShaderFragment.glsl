@@ -10,6 +10,7 @@ uniform mat4 modelToWorldMatrix;
 
 out vec3 fragmentNormalWorld;
 out vec3 fragmentPositionWorld;
+out vec2 fragmentUV;
 
 void main()
 {
@@ -17,4 +18,5 @@ void main()
     gl_Position = modelToProjectionMatrix * v;
 	fragmentNormalWorld = vec3(modelToWorldMatrix * vec4(vertexNormalModel, 0));
 	fragmentPositionWorld = vec3(modelToWorldMatrix * v);
+	fragmentUV = vertexUvModel;
 }
